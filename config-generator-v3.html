@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Config Generator v3.5 (Premium UI)</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* --- THEME VARIABLES --- */
+            --bg-body: #F5F5F7;
+            --bg-sidebar: #FFFFFF;
+            --text-main: #1C1C1E;
+            --text-secondary: #666666;
+            --text-tertiary: #999999;
+            --border-light: #E5E5E5;
+            --border-hover: #D4D4D4;
+            --border-active: #1C1C1E;
+            --accent: #1C1C1E;
+            --accent-contrast: #FFFFFF;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --sidebar-width: 340px;
+            --header-height: 60px;
+        }
+
+        * { box-sizing: border-box; outline: none; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            font-size: 13px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+        }
+
+        .sidebar-header {
+            height: var(--header-height);
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar-header h2 {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-header .badge {
+            font-size: 10px;
+            background: #F2F2F2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            border: 1px solid #E5E5E5;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .sidebar-content::-webkit-scrollbar { width: 6px; }
+        .sidebar-content::-webkit-scrollbar-thumb { background: #E5E5E5; border-radius: 3px; }
+        .sidebar-content::-webkit-scrollbar-thumb:hover { background: #D4D4D4; }
+
+        .group { margin-bottom: 24px; }
+
+        .group-header {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: color 0.2s;
+        }
+
+        .group-header:hover { color: var(--text-main); }
+
+        .group-header::after {
+            content: '';
+            width: 6px; height: 6px;
+            border-right: 1.5px solid currentColor;
+            border-bottom: 1.5px solid currentColor;
+            transform: rotate(45deg);
+            transition: transform 0.2s;
+            margin-right: 4px;
+        }
+
+        .group.open .group-header::after { transform: rotate(-135deg); }
+        .group-body { display: none; }
+        .group.open .group-body { display: block; animation: slideIn 0.2s ease-out; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .control-row { margin-bottom: 16px; }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .helper-text {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            height: 36px;
+            padding: 0 10px;
+            font-family: inherit;
+            font-size: 13px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            background: #fff;
+            color: var(--text-main);
+            transition: all 0.15s;
+            appearance: none;
+        }
+
+        input:hover, select:hover { border-color: var(--border-hover); }
+        input:focus, select:focus { border-color: var(--border-active); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 14px;
+            padding-right: 30px;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            min-height: 24px;
+        }
+
+        .toggle-row label { margin: 0; font-weight: 400; color: var(--text-secondary); }
+
+        input[type="checkbox"] {
+            appearance: none;
+            width: 36px;
+            height: 20px;
+            background: #E5E5E5;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+        }
+
+        input[type="checkbox"]::after {
+            content: '';
+            position: absolute;
+            top: 2px; left: 2px;
+            width: 16px; height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            transition: 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        input[type="checkbox"]:checked { background: var(--accent); }
+        input[type="checkbox"]:checked::after { transform: translateX(16px); }
+
+        .color-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #FAFAFA;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+        }
+
+        .color-chip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .color-chip .color-label { font-size: 12px; font-weight: 500; }
+
+        input[type="color"] {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border: 1px solid var(--border-light);
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #F5F5F7;
+            position: relative;
+        }
+
+        .topbar {
+            height: var(--header-height);
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-light);
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .device-toggle {
+            background: #F2F2F2;
+            padding: 2px;
+            border-radius: 6px;
+            display: flex;
+        }
+
+        .device-toggle button {
+            border: none;
+            background: transparent;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .device-toggle button.active {
+            background: #fff;
+            color: var(--text-main);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .copy-btn {
+            background: var(--accent);
+            color: var(--accent-contrast);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        .copy-btn:hover { opacity: 0.9; }
+        .copy-btn:active { transform: scale(0.98); }
+        .copy-btn.copied { background: #10B981; }
+
+        .preview-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background-image: radial-gradient(#E1E1E1 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        #previewFrame {
+            background: #fff;
+            width: 100%;
+            max-width: 1100px;
+            min-height: 600px;
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius-lg);
+            padding: 48px;
+            transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-light);
+        }
+
+        #previewFrame.mobile {
+            width: 375px;
+            padding: 24px;
+            border-radius: 30px;
+            border: 8px solid #333;
+        }
+
+        .code-drawer {
+            height: 250px;
+            background: #0D0D0D;
+            color: #E1E1E1;
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid var(--border-light);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .drawer-header {
+            padding: 10px 24px;
+            background: #1A1A1A;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .drawer-header h3 {
+            margin: 0;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #888;
+        }
+
+        #codeOutput {
+            flex: 1;
+            padding: 24px;
+            margin: 0;
+            overflow: auto;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #A9B7C6;
+        }
+
+        .mobile-tabs { display: none; }
+
+        @media (max-width: 1023px) {
+            body { flex-direction: column; overflow: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; border-right: none; }
+            .main-content { display: none; }
+
+            .mobile-tabs {
+                display: flex; position: fixed; bottom: 0; left: 0; right: 0;
+                background: #fff; border-top: 1px solid #eee; z-index: 100;
+                height: 50px; padding-bottom: env(safe-area-inset-bottom);
+            }
+            .tab-btn {
+                flex: 1; border: none; background: none; font-weight: 500;
+                color: var(--text-tertiary); font-size: 12px;
+            }
+            .tab-btn.active { color: var(--accent); border-top: 2px solid var(--accent); }
+
+            body.tab-edit .sidebar { display: flex; padding-bottom: 60px; }
+            body.tab-edit .main-content { display: none; }
+
+            body.tab-preview .sidebar { display: none; }
+            body.tab-preview .main-content { display: flex; height: 100vh; padding-bottom: 60px; }
+            body.tab-preview .code-drawer { display: none; }
+
+            body.tab-code .sidebar { display: none; }
+            body.tab-code .main-content { display: flex; height: 100vh; padding-bottom: 60px; }
+            body.tab-code .preview-container { display: none; }
+        }
+
+        /* -------------------------------------------------------------
+           MOCK PREVIEW CSS
+        ------------------------------------------------------------- */
+        .mock-wrapper {
+            width: 100%;
+            font-size: 14px;
+            --pf-sticky-top: 20px;
+            --pf-tag-bg: #f0f0f0;
+            --pf-tag-text: #333;
+            --pf-tag-radius: 4px;
+            --pf-tag-border-width: 0px;
+            --pf-tag-border-color: #cccccc;
+            --pf-tag-pad-x: 6px;
+            --pf-tag-pad-y: 2px;
+            --pf-tag-font-size: 14px;
+            --pf-truncate-font-size: 14px;
+            --pf-truncate-text-color: #333;
+        }
+
+        /* --- PREVIEW GRID CARDS --- */
+        .mock-item {
+            position: relative;
+            background: #FFFFFF;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #E5E5E5;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .mock-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            border-color: #D4D4D4;
+        }
+
+        .mock-item-image-placeholder {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #F3F4F6;
+            position: relative;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .mock-item-txt {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .mock-item-txt h4 { margin: 0; font-size: 15px; font-weight: 600; color: #111; letter-spacing: -0.01em; }
+        .mock-item-excerpt { font-size: 13px; color: #666; line-height: 1.5; margin-top: 4px; }
+
+        .mock-item-meta-wrapper { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+        .mock-meta-item { font-size: 12px; color: #666; font-weight: 500; }
+
+        .mock-wrapper.pf-tag-style-pills .mock-meta-item {
+            background: var(--pf-tag-bg);
+            color: var(--pf-tag-text);
+            border-radius: var(--pf-tag-radius);
+            border: var(--pf-tag-border-width) solid var(--pf-tag-border-color);
+            padding: var(--pf-tag-pad-y) var(--pf-tag-pad-x);
+            font-size: var(--pf-tag-font-size);
+            font-weight: 500;
+        }
+
+        /* --- LAYOUT LOGIC --- */
+        .mock-wrapper.mock-layout-sidebar {
+            display: flex;
+            align-items: flex-start;
+            gap: 4%;
+        }
+        .mock-wrapper.mock-layout-sidebar .mock-controls {
+            width: var(--pf-sidebar-width, 30%);
+            flex-shrink: 0;
+        }
+        .mock-wrapper.mock-layout-sidebar .mock-content {
+            width: var(--pf-grid-width, 70%);
+            flex-grow: 1;
+        }
+        .mock-wrapper.mock-layout-top {
+            display: flex;
+            flex-direction: column;
+        }
+        .mock-wrapper.mock-layout-top .mock-controls {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        /* --- PREVIEW CONTROLS STRUCTURE (TOP LAYOUT) --- */
+        .mock-controls-top-row {
+            display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;
+            width: 100%; margin-bottom: 16px;
+        }
+        .mock-controls-left { flex: 1; }
+        .mock-controls-right {
+            display: flex; gap: 10px; align-items: center; flex-shrink: 0;
+        }
+        .mock-reset-row { width: 100%; display: flex; justify-content: flex-end; margin-top: 10px; }
+
+        /* Meta Layouts */
+        .mock-item-txt.meta-layout-split {
+            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline;
+        }
+        .mock-item-txt.meta-layout-split .mock-item-excerpt { width: 100%; }
+
+        .mock-item-txt.meta-layout-stacked-above { flex-direction: column-reverse; }
+        .mock-item-txt.meta-layout-stacked-above h4 { margin-top: 6px; }
+
+        .mock-item-txt.meta-layout-overlay-top-left,
+        .mock-item-txt.meta-layout-overlay-top-right {
+            position: static !important;
+        }
+        .mock-item-txt.meta-layout-overlay-top-left .mock-item-meta-wrapper {
+            position: absolute; top: 12px; left: 12px; z-index: 10; margin: 0;
+        }
+        .mock-item-txt.meta-layout-overlay-top-right .mock-item-meta-wrapper {
+            position: absolute; top: 12px; right: 12px; z-index: 10; margin: 0; justify-content: flex-end;
+        }
+        [class*="meta-layout-overlay"] .mock-meta-item {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #000 !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            backdrop-filter: blur(4px);
+        }
+
+        /* --- PREVIEW CONTROL ELEMENTS --- */
+        .mock-options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 0; transition: max-height 0.3s ease; }
+        .mock-filter-group { margin-bottom: 24px; }
+        .mock-filter-header { font-weight: 600; text-transform: uppercase; font-size: 11px; margin-bottom: 10px; color: #555; letter-spacing: 0.05em; }
+
+        /* Buttons */
+        .mock-btn {
+            border: 1px solid #E5E7EB; background: #fff; color: #333;
+            padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: all 0.2s;
+            font-size: 13px; font-weight: 500;
+        }
+        .mock-btn:hover { border-color: #B0B0B0; }
+        .mock-btn.active { border-color: #111; background: #111; color: #fff; }
+
+        /* Minimal Text */
+        .mock-wrapper.inline-variant-text .mock-btn {
+            border: none; background: transparent; padding: 0; color: #555; font-weight: 400;
+        }
+        .mock-wrapper.inline-variant-text .mock-btn:hover { color: #111; }
+        .mock-wrapper.inline-variant-text .mock-btn.active { text-decoration: underline; color: #000; font-weight: 600; }
+
+        /* Checkboxes in Preview */
+        .mock-label-check {
+            display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer;
+            font-size: 14px; color: #333; width: 100%;
+        }
+        .mock-label-check input[type="checkbox"] {
+            appearance: none; width: 16px; height: 16px; border: 1px solid #c7c7c7; border-radius: 3px;
+            background: transparent; display: inline-grid; place-content: center; margin: 0;
+            transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .mock-label-check input[type="checkbox"]::after {
+            content: ''; width: 6px; height: 10px; border-right: 2px solid #fff; border-bottom: 2px solid #fff;
+            transform: rotate(45deg) scale(0); transition: transform 0.15s ease;
+        }
+        .mock-label-check input[type="checkbox"]:checked { background: #111; border-color: #111; }
+        .mock-label-check input[type="checkbox"]:checked::after { transform: rotate(45deg) scale(1); }
+        .mock-label-check input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 3px rgba(0,0,0,0.08); }
+
+        .mock-count { opacity: 0.6; font-size: 0.85em; margin-left: 4px; }
+
+        /* Dropdowns in Preview */
+        .mock-dropdown-header {
+            border: 1px solid #E5E7EB; padding: 10px 14px; border-radius: 6px; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center; background: #fff;
+            font-size: 13px; font-weight: 500; width: 200px; /* Constrain width */
+        }
+        .mock-dropdown-header .mock-caret {
+            width: 10px; height: 10px; transition: transform 0.2s;
+        }
+        .mock-dropdown-content {
+            border: 1px solid #E5E7EB; border-radius: 6px; padding: 10px; margin-top: 6px; background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            max-height: 0; overflow: hidden; opacity: 0; position: static; width: 200px;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+        }
+
+        #previewFrame:not(.mobile) .mock-wrapper.mock-layout-top .mock-filter-group {
+            position: relative;
+        }
+
+        #previewFrame:not(.mobile) .mock-wrapper.mock-layout-top .mock-dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 25;
+        }
+
+        .mock-filter-group.open .mock-dropdown-content {
+            max-height: 400px; opacity: 1; overflow: visible;
+        }
+        .mock-filter-group.open .mock-dropdown-header .mock-caret,
+        .mock-filter-group.accordion.open .mock-filter-header .mock-caret {
+            transform: rotate(180deg);
+        }
+
+        /* Accordion */
+        .mock-filter-group.accordion .mock-options {
+            max-height: 0; overflow: hidden; opacity: 0;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+        }
+        .mock-filter-group.accordion.open .mock-options {
+            max-height: 500px; opacity: 1;
+        }
+        .mock-filter-group.accordion .mock-filter-header {
+            display: flex; justify-content: space-between; cursor: pointer;
+        }
+        /* Fix Mobile Caret Size */
+        #previewFrame.mobile .mock-filter-group.accordion .mock-filter-header .mock-caret { width: 10px; height: 10px; }
+
+        /* Show More Button */
+        .mock-truncate-toggle {
+            background: none; border: none; padding: 0; color: #666; text-decoration: underline;
+            cursor: pointer; font-size: 12px; margin-top: 8px; display: block;
+        }
+
+        /* Search Input */
+        .mock-controls input#mockSearchInput {
+            height: 38px; padding: 0 32px 0 12px; min-width: 200px;
+            border-radius: 6px; border: 1px solid #D6D6D6; background: transparent;
+            font-size: 13px; transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3e%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 10px center;
+        }
+        .mock-controls input#mockSearchInput:focus {
+            border-color: #111; box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+        }
+
+        /* Sort Select */
+        .mock-sort-select {
+            height: 38px; padding: 0 28px 0 12px; border: 1px solid #D6D6D6; border-radius: 6px;
+            font-size: 13px; cursor: pointer; background: transparent;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat; background-position: right 8px center; background-size: 12px;
+            appearance: none;
+        }
+
+        .mock-sort-select:focus {
+            border-color: #111;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+        }
+
+        #previewFrame:not(.mobile) .mock-controls-right input#mockSearchInput,
+        #previewFrame:not(.mobile) .mock-controls-right .mock-sort-select {
+            width: 220px;
+            max-width: 100%;
+        }
+
+        /* Load More / Reset Buttons */
+        .mock-load-btn {
+            background: #1C1C1E; color: #fff; border: none; padding: 8px 16px; border-radius: 6px;
+            cursor: pointer; font-weight: 500; font-size: 12px; height: 38px;
+        }
+        .mock-load-btn:hover { opacity: 0.9; }
+        .mock-pagination { margin-top: 40px; display: flex; flex-direction: column; align-items: flex-end; width: 100%; }
+        .mock-pag-txt { margin-bottom: 12px; font-size: 12px; color: #666; }
+
+        /* Grid */
+        .mock-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+        }
+
+        /* Sticky */
+        .mock-wrapper.sticky-enabled .mock-controls {
+            position: sticky; top: var(--pf-sticky-top);
+            max-height: calc(100vh - var(--pf-sticky-top) - 20px);
+            overflow-y: auto; scrollbar-color: transparent transparent;
+        }
+        .mock-wrapper.sticky-enabled .mock-controls:hover { scrollbar-color: rgba(0,0,0,0.2) transparent; }
+
+        /* Mobile Preview Overrides */
+        #previewFrame.mobile .mock-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+        #previewFrame.mobile .mock-wrapper.sticky-enabled .mock-controls { position: static !important; }
+
+        #previewFrame.mobile .mock-controls-top-row { flex-direction: column; gap: 16px; }
+        #previewFrame.mobile .mock-controls-right { width: 100%; flex-direction: column; align-items: stretch; }
+        #previewFrame.mobile .mock-controls-left { width: 100%; }
+        #previewFrame.mobile .mock-reset-row { justify-content: flex-start; }
+        #previewFrame.mobile .mock-dropdown-header, #previewFrame.mobile .mock-dropdown-content { width: 100%; }
+
+        #previewFrame.mobile .mock-wrapper.mock-layout-sidebar { flex-direction: column; }
+        #previewFrame.mobile .mock-wrapper.mock-layout-sidebar .mock-controls { width: 100%; margin-bottom: 20px; }
+        #previewFrame.mobile .mock-wrapper.mock-layout-sidebar .mock-content { width: 100%; }
+
+        #previewFrame.mobile .mobile-style-chips .mock-options { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+        #previewFrame.mobile .mobile-style-wrap .mock-options { flex-wrap: wrap; }
+        #previewFrame.mobile .mobile-style-checkbox .mock-options { flex-direction: column; align-items: flex-start; }
+
+    </style>
+</head>
+
+<body class="tab-edit">
+
+    <div class="mobile-tabs">
+        <button class="tab-btn active" onclick="setTab('edit')">Settings</button>
+        <button class="tab-btn" onclick="setTab('preview')">Preview</button>
+        <button class="tab-btn" onclick="setTab('code')">Code</button>
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Config Generator <span class="badge">v3.5</span></h2>
+        </div>
+        <div class="sidebar-content">
+
+            <div class="group open">
+                <div class="group-header" onclick="togGroup(this)">Layout & Structure</div>
+                <div class="group-body">
+                    <div class="control-row">
+                        <label>Main Layout</label>
+                        <select id="layout">
+                            <option value="top" selected>Top (Full Width)</option>
+                            <option value="sidebar">Sidebar (Left 30% / Right 70%)</option>
+                        </select>
+                    </div>
+
+                    <div class="toggle-row" id="stickyRow">
+                        <label>Sticky Sidebar</label>
+                        <input type="checkbox" id="stickySidebar">
+                    </div>
+
+                    <div class="control-row" id="stickySpacingRow" style="display:none;">
+                        <label>Top Offset (px)</label>
+                        <input type="number" id="stickyTopSpacing" value="20">
+                        <div class="helper-text">Space from top of screen.</div>
+                    </div>
+
+                    <div class="toggle-row">
+                        <label>Multiple Filter Groups</label>
+                        <input type="checkbox" id="multipleFilterGroups">
+                    </div>
+                    <div class="toggle-row">
+                        <label>Hide if Single Option</label>
+                        <input type="checkbox" id="hideSingleValueFilters">
+                    </div>
+                    <div class="toggle-row" id="showFilterLabelRow">
+                        <label>Show Filter Label</label>
+                        <input type="checkbox" id="showFilterLabel">
+                    </div>
+
+                    <div class="control-row" id="sidebarWidthRow" style="display:none;">
+                        <label>Sidebar Width (%)</label>
+                        <input type="number" id="sidebarWidthPercent" value="30" min="10" max="90">
+                    </div>
+                    <div class="control-row" id="gridWidthRow" style="display:none;">
+                        <label>Grid Width (%)</label>
+                        <input type="number" id="gridWidthPercent" value="70" min="10" max="90">
+                    </div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-header" onclick="togGroup(this)">Styling & Colors</div>
+                <div class="group-body">
+                    <div class="control-row">
+                        <label>Preset Theme</label>
+                        <select id="stylePreset">
+                            <option value="buttons">Buttons (Solid)</option>
+                            <option value="underline">Underline (Tabs)</option>
+                            <option value="minimal">Minimal Text</option>
+                        </select>
+                    </div>
+
+                    <div class="control-row">
+                        <label>Alignment</label>
+                        <select id="align">
+                            <option value="left">Left</option>
+                            <option value="center">Center</option>
+                            <option value="right">Right</option>
+                        </select>
+                    </div>
+
+                    <div class="control-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div><label>Gap (px)</label><input type="number" id="gap" value="10"></div>
+                        <div><label>Margin (px)</label><input type="number" id="marginBottom" value="30"></div>
+                    </div>
+
+                    <div class="control-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div><label>Radius</label><input type="number" id="radius" value="4"></div>
+                        <div><label>Border</label><input type="number" id="borderWidth" value="1"></div>
+                    </div>
+
+                    <div class="control-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div><label>Pad Vert</label><input type="number" id="padV" value="8"></div>
+                        <div><label>Pad Horiz</label><input type="number" id="padH" value="16"></div>
+                    </div>
+
+                    <div class="color-row">
+                        <div class="color-chip"><span class="color-label">Active Background</span><input type="color" id="c_bg_act" value="#333333"></div>
+                        <div class="color-chip"><span class="color-label">Active Text</span><input type="color" id="c_txt_act" value="#ffffff"></div>
+                        <div class="color-chip"><span class="color-label">Default Text</span><input type="color" id="c_txt_def" value="#555555"></div>
+                        <input type="hidden" id="c_bg_def" value="transparent">
+                        <input type="hidden" id="c_bor_def" value="#dddddd">
+                        <input type="hidden" id="c_bor_act" value="#333333">
+                    </div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-header" onclick="togGroup(this)">Grid Item Meta</div>
+                <div class="group-body">
+
+                    <div class="control-row">
+                        <label>Meta Layout</label>
+                        <select id="metaLayout">
+                            <option value="stacked-below">Stacked (Below Title)</option>
+                            <option value="stacked-above" selected>Stacked (Above Title)</option>
+                            <option value="split">Split (Inline)</option>
+                            <option value="overlay-top-left">Overlay (Top Left)</option>
+                            <option value="overlay-top-right">Overlay (Top Right)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-row">
+                        <label>Tag Style</label>
+                        <select id="tagStyle">
+                            <option value="text" selected>Plain Text</option>
+                            <option value="pills">Pills / Badges</option>
+                        </select>
+                    </div>
+
+                    <div id="tagPillSettings" style="display:none; border-left: 2px solid var(--border-light); padding-left: 12px; margin-bottom: 16px;">
+                        <div class="color-row">
+                            <div class="color-chip"><span class="color-label">Badge Background</span><input type="color" id="tagBgColor" value="#f0f0f0"></div>
+                            <div class="color-chip"><span class="color-label">Badge Text</span><input type="color" id="tagTextColor" value="#333333"></div>
+                        </div>
+                        <div class="control-row" style="margin-top:10px;"><label>Corner Radius (px)</label><input type="number" id="tagRadius" value="4"></div>
+                        <input type="hidden" id="tagBorderColor" value="#cccccc">
+                        <input type="hidden" id="tagBorderWidth" value="0">
+                        <input type="hidden" id="tagPadX" value="6">
+                        <input type="hidden" id="tagPadY" value="2">
+                        <input type="hidden" id="tagFontSize" value="14">
+                    </div>
+
+                    <div class="toggle-row"><label>Show Tags</label><input type="checkbox" id="m_tags"></div>
+                    <div class="control-row">
+                        <label>Tag Delimiter</label>
+                        <div style="display:flex; gap:8px;">
+                            <select id="tagDelimiterMode">
+                                <option value="space">Space</option>
+                                <option value="comma">Comma</option>
+                                <option value="pipe">Pipe |</option>
+                                <option value="slash">Slash /</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            <input type="text" id="tagDelimiterCustom" style="display:none; width:60px;" placeholder="Sym">
+                        </div>
+                    </div>
+
+                    <div class="toggle-row"><label>Show Year</label><input type="checkbox" id="m_year"></div>
+                    <div class="toggle-row"><label>Show Location</label><input type="checkbox" id="m_loc"></div>
+                    <div class="toggle-row"><label>Show Excerpt</label><input type="checkbox" id="m_exc"></div>
+                    <div class="toggle-row"><label>Show Custom Field</label><input type="checkbox" id="m_cust"></div>
+                    <div class="control-row" id="customMetaRow" style="display:none;">
+                        <label>Custom Field Key</label>
+                        <input type="text" id="customMetaFields" placeholder="Client, Author">
+                    </div>
+                    <div class="toggle-row"><label>Show Labels (e.g. 'Year:')</label><input type="checkbox" id="showMetaLabels"></div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-header" onclick="togGroup(this)">Text Labels</div>
+                <div class="group-body">
+                    <div class="control-row"><label>All Text</label><input type="text" id="allText" value="All"></div>
+                    <div class="control-row"><label>Reset Text</label><input type="text" id="resetText" value="Reset All"></div>
+                    <div class="control-row"><label>Search Placeholder</label><input type="text" id="searchPlaceholder" value="Search projects..."></div>
+                    <div class="control-row"><label>Sort Label</label><input type="text" id="sortText" value="Sort By"></div>
+                    <div class="control-row"><label>Default Filter Name</label><input type="text" id="defaultFilterName" value="Tags"></div>
+                    <div class="control-row"><label>No Results Text</label><input type="text" id="noResultsText" value="No results found."></div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-header" onclick="togGroup(this)">Motion</div>
+                <div class="group-body">
+                    <div class="control-row">
+                        <label>Grid Animation</label>
+                        <select id="gridAnimation">
+                            <option value="none">None</option>
+                            <option value="fade">Fade In</option>
+                            <option value="fade-up" selected>Fade Up</option>
+                            <option value="zoom">Zoom</option>
+                        </select>
+                    </div>
+                    <div class="control-row" id="animSpeedRow">
+                        <label>Speed</label>
+                        <select id="animationSpeed">
+                            <option value="slow">Slow</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="fast">Fast</option>
+                        </select>
+                    </div>
+                    <div class="toggle-row" id="animStaggerRow">
+                        <label>Stagger (Cascade)</label>
+                        <input type="checkbox" id="animationStagger" checked>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="group-header" onclick="togGroup(this)">Advanced Behavior</div>
+                <div class="group-body">
+                    <div class="control-row">
+                        <label>Desktop Filter Style</label>
+                        <select id="desktopStyleSelect">
+                            <option value="buttons">Buttons</option>
+                            <option value="text">Minimal Text</option>
+                            <option value="dropdown">Dropdown</option>
+                            <option value="checkbox">Checkboxes</option>
+                        </select>
+                        <div class="helper-text" id="desktopStyleHelper"></div>
+                        <input type="hidden" id="filterLayout" value="inline">
+                        <input type="hidden" id="desktopInlineVariant" value="buttons">
+                    </div>
+
+                    <div class="control-row">
+                        <label>Mobile Filter Style</label>
+                        <select id="mobileDisplayStyle">
+                            <option value="chips">Horizontal Chips</option>
+                            <option value="wrap" selected>Stacked Wrap</option>
+                            <option value="accordion">Accordion</option>
+                            <option value="checkbox">Checkbox</option>
+                        </select>
+                        <div class="helper-text" id="mobileHelperText"></div>
+                    </div>
+
+                    <div class="toggle-row"><label>Search Bar</label><input type="checkbox" id="searchEnabled" checked></div>
+                    <div class="toggle-row"><label>Sorting</label><input type="checkbox" id="sortEnabled" checked></div>
+                    <div class="toggle-row"><label>Show Year in Sort</label><input type="checkbox" id="displayYearInSort" checked></div>
+                    <div class="toggle-row"><label>Reset Button</label><input type="checkbox" id="showResetButton"></div>
+                    <div class="toggle-row"><label>Multi-Select</label><input type="checkbox" id="allowMultiSelect"></div>
+                    <div class="toggle-row"><label>Show Item Counts</label><input type="checkbox" id="showItemCounts"></div>
+
+                    <div class="toggle-row"><label>Truncate Long Lists</label><input type="checkbox" id="truncateFilters"></div>
+                    <div id="truncateSettings" style="display:none;">
+                        <div class="control-row"><label>Max Items</label><input type="number" id="truncateMax" value="5"></div>
+                        <div class="control-row" style="display: grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <div><label>More Label</label><input type="text" id="showMoreLabel" value="Show more"></div>
+                            <div><label>Less Label</label><input type="text" id="showLessLabel" value="Show less"></div>
+                        </div>
+                        <input type="hidden" id="truncateToggleFontSize" value="14">
+                        <input type="hidden" id="truncateToggleColor" value="#333333">
+                    </div>
+
+                    <div class="control-row">
+                        <label>Default Sort</label>
+                        <select id="defaultSortOrder">
+                            <option value="original">Original</option>
+                            <option value="asc">A-Z</option>
+                            <option value="desc">Z-A</option>
+                            <option value="date-newest">Newest</option>
+                            <option value="date-oldest">Oldest</option>
+                        </select>
+                    </div>
+
+                    <div class="toggle-row"><label>Random Order</label><input type="checkbox" id="randomOrder"></div>
+
+                    <div class="control-row">
+                        <label>Pagination</label>
+                        <select id="pagType">
+                            <option value="none">None</option>
+                            <option value="loadMore">Load More Button</option>
+                        </select>
+                    </div>
+                    <div class="control-row"><label>Items Per Page</label><input type="number" id="itemsPerPage" value="8"></div>
+                    <div class="control-row"><label>Load Button Text</label><input type="text" id="loadMoreLabel" value="Load More Projects"></div>
+                    <div class="toggle-row"><label>Show Progress Text</label><input type="checkbox" id="showProgress" checked></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="device-toggle">
+                <button id="desktopToggle" class="active" onclick="setDev('desktop')">Desktop</button>
+                <button id="mobileToggle" onclick="setDev('mobile')">Mobile</button>
+            </div>
+            <button class="copy-btn" id="copyBtn" onclick="copyCode()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                Copy Code
+            </button>
+        </div>
+
+        <div class="preview-container">
+            <div id="previewFrame">
+                <div class="mock-wrapper" id="mockWrapper"></div>
+            </div>
+        </div>
+
+        <div class="code-drawer">
+            <div class="drawer-header"><h3>Installation Code</h3></div>
+            <pre id="codeOutput"></pre>
+        </div>
+    </div>
+
+    <script>
+      try {
+        const TAGS = ['Branding', 'Architecture', 'Interiors', 'Photography']
+        const LOCATIONS = ['Miami', 'Austin', 'NYC', 'LA']
+        const YEARS = [2022, 2023, 2024, 2025]
+        const AUTHORS = ['Alex Kim','Jordan Lee','Taylor Morgan','Riley Chen']
+        const CLIENTS = ['Google', 'Apple', 'Nike', 'Tesla']
+
+        let config = {}
+        const DATA = Array.from({ length: 60 }, (_, i) => {
+          const meta = {
+            Location: LOCATIONS[i % LOCATIONS.length],
+            Year: YEARS[i % YEARS.length],
+            Author: AUTHORS[i % AUTHORS.length],
+            Client: CLIENTS[i % CLIENTS.length]
+          }
+          return {
+            id: i,
+            title: `Project ${i + 1}`,
+            tags: [TAGS[i % TAGS.length], TAGS[(i + 1) % TAGS.length]],
+            location: meta.Location,
+            year: meta.Year,
+            excerpt: `Sample excerpt for Project ${i + 1}. Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
+            author: meta.Author,
+            client: meta.Client,
+            meta
+          }
+        })
+
+        let state = {
+          page: 1,
+          filters: { tags: [], location: [], year: [] },
+          search: '',
+          sort: 'original'
+        }
+
+        /* --- UI HELPERS --- */
+        function prepareMockWrapper(el) {
+          if (!el || el.dataset.mockWrapperReady === '1') return
+          el.classList.add('pf-wrapper-prep')
+          el.dataset.mockWrapperReady = '1'
+          void el.offsetHeight
+          requestAnimationFrame(() => {
+            el.classList.add('pf-wrapper-ready')
+            el.classList.remove('pf-wrapper-prep')
+          })
+        }
+
+        function replayMockAnimations(gridEl, items, animMode, staggerOn) {
+          if (!gridEl || !items || !items.length) return
+          if (animMode === 'none') return
+
+          const delayStep = staggerOn === false ? 0 : 60
+          const baseTransform = animMode === 'zoom' ? 'scale(0.97)' : (animMode === 'fade-up' ? 'translateY(10px)' : 'none')
+
+          items.forEach((el, idx) => {
+            el.classList.remove('pf-anim-visible', 'is-visible')
+            el.style.transition = 'none'
+            el.style.opacity = '0'
+            el.style.transform = baseTransform
+            el.style.setProperty('--mock-anim-delay', `0ms`)
+          })
+
+          void gridEl.offsetHeight
+
+          requestAnimationFrame(() => {
+            items.forEach((el, idx) => {
+              const delay = staggerOn === false ? 0 : idx * delayStep
+              el.style.transition = ''
+              el.style.opacity = ''
+              el.style.transform = ''
+              el.style.setProperty('--mock-anim-delay', `${delay}ms`)
+              el.classList.add('pf-anim-visible', 'is-visible')
+            })
+          })
+        }
+
+        let sortInitialized = false
+        let groupOpenState = {}
+        let lastLayout = null
+        let lastFilterLayout = null
+        let lastMobileBehavior = null
+        let lastMobileDisplayStyle = null
+        let forceMobileCheckbox = false
+        let previewRandomMap = null
+        let lastRandomEnabled = false
+
+        function getOptionsFromData(key) {
+          const values = new Set()
+          DATA.forEach(item => {
+            if (Array.isArray(item[key])) item[key].forEach(v => values.add(v))
+            else if (item[key] !== undefined && item[key] !== null) values.add(item[key])
+          })
+          return Array.from(values)
+        }
+
+        function getOptionCount(key, value) {
+          let count = 0
+          DATA.forEach(item => {
+            const itemVal = item[key]
+            if (Array.isArray(itemVal)) {
+              if (itemVal.includes(value)) count += 1
+            } else if (itemVal === value) {
+              count += 1
+            }
+          })
+          return count
+        }
+
+        function parseCustomFieldList(raw) {
+          return (raw || '').split(',').map(v => v.trim()).filter(Boolean)
+        }
+
+        function mapMetaLayoutClass(layout) {
+          const raw = (layout || 'stacked-above').toLowerCase()
+          if (raw === 'stacked-above') return 'meta-layout-stacked-above'
+          if (raw === 'split') return 'meta-layout-split'
+          if (raw === 'overlay-top-left') return 'meta-layout-overlay-top-left'
+          if (raw === 'overlay-top-right') return 'meta-layout-overlay-top-right'
+          return 'meta-layout-stacked-below'
+        }
+
+        function sanitizeKeyForClass(key) {
+          return key.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-')
+        }
+
+        function clampPercent(value) {
+          const num = Number(value)
+          if (Number.isNaN(num)) return null
+          return Math.min(90, Math.max(10, num))
+        }
+
+        function getMetaValue(item, keyName) {
+          if (!keyName) return null
+          const lower = keyName.toLowerCase()
+          const metaObj = item.meta || {}
+          const matchKey = Object.keys(metaObj).find(k => k.toLowerCase() === lower)
+          if (matchKey) return metaObj[matchKey]
+          if (lower === 'location') return item.location
+          if (lower === 'year') return item.year
+          if (lower === 'author') return item.author
+          if (lower === 'client') return item.client
+          return null
+        }
+
+        function shuffleArray(arr) {
+          const copy = [...arr]
+          for (let i = copy.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1))
+            ;[copy[i], copy[j]] = [copy[j], copy[i]]
+          }
+          return copy
+        }
+
+        function resolveTagDelimiter(mode, custom) {
+          if (mode === 'comma') return ', '
+          if (mode === 'pipe') return ' | '
+          if (mode === 'slash') return ' / '
+          if (mode === 'dot') return ' • '
+          if (mode === 'custom') return custom || ' '
+          return ' '
+        }
+
+        function toggleFilter(key, value) {
+          if (value === 'ALL_KEY') {
+             state.filters[key] = []
+          } else {
+             const current = Array.isArray(state.filters[key]) ? [...state.filters[key]] : []
+             const idx = current.indexOf(value)
+             if (config.allowMultiSelect) {
+                if (idx >= 0) current.splice(idx, 1)
+                else current.push(value)
+             } else {
+                if (idx >= 0) current.splice(idx, 1)
+                else { current.length = 0; current.push(value) }
+             }
+             state.filters[key] = current
+          }
+          state.page = 1
+          renderMock()
+        }
+
+        function resetFilters() {
+          state.filters = { tags: [], location: [], year: [] }
+          state.search = ''
+          state.sort = config.defaultSortOrder || 'original'
+          state.page = 1
+          const s = document.getElementById('mockSearchInput')
+          if (s) s.value = ''
+          renderMock()
+        }
+
+        function closeMockDropdown(group) {
+          if (!group) return
+          group.classList.remove('open')
+          const header = group.querySelector('.mock-dropdown-header')
+          const optsDiv = group.querySelector('.mock-dropdown-content')
+          if (header) header.setAttribute('aria-expanded', 'false')
+          if (optsDiv) {
+            optsDiv.setAttribute('aria-hidden', 'true')
+            optsDiv.style.maxHeight = 0
+            optsDiv.style.opacity = 0
+          }
+          if (group.dataset.groupKey) groupOpenState[group.dataset.groupKey] = false
+        }
+
+        function closeOtherOpenMenus(currentGroup) {
+          if (!currentGroup) return
+          const isMobilePreview = document.getElementById('previewFrame')?.classList.contains('mobile')
+          const useCheckboxDropdown = config.filterLayout === 'checkbox' && config.layout === 'top'
+          const isDropdown = config.filterLayout === 'dropdown' || useCheckboxDropdown
+          if (isMobilePreview || config.layout !== 'top' || !isDropdown) return
+          const groups = document.querySelectorAll('.mock-controls-left .mock-filter-group.open')
+          groups.forEach(group => {
+            if (group === currentGroup) return
+            closeMockDropdown(group)
+          })
+        }
+
+        /* --- MOCK RENDERER --- */
+        function renderFilterGroup(label, options, key, displayLabel, orderIndex) {
+          if (!options || options.length === 0) return null
+          if (!config.multipleFilterGroups && key !== 'tags') return null
+
+          const group = document.createElement('div')
+          group.className = 'mock-filter-group'
+
+          const layout = config.layout || 'sidebar'
+          const isMobilePreview = document.getElementById('previewFrame')?.classList.contains('mobile')
+          const mobileDisplayMode = config.mobile?.displayStyle || 'chips'
+          const mobileBehavior = config.mobile?.behavior || 'none'
+          const isAccordion = mobileBehavior === 'accordion' && isMobilePreview
+          const mobileCheckboxMode = isMobilePreview && (mobileBehavior === 'checkbox' || mobileDisplayMode === 'checkbox')
+          const effectiveMobileStyle = mobileCheckboxMode ? 'checkbox' : mobileDisplayMode
+          const useCheckboxDropdown = config.filterLayout === 'checkbox' && layout === 'top'
+          const isDropdown = config.filterLayout === 'dropdown' || useCheckboxDropdown
+          const forceLabelForLayout = config.filterLayout !== 'inline'
+          const shouldShowLabel = forceLabelForLayout || config.showFilterLabel || isAccordion
+          const isChipRow = isMobilePreview && effectiveMobileStyle === 'chips' && !isDropdown
+
+          if (isAccordion) group.classList.add('accordion')
+          if (isChipRow) group.classList.add('chip-row')
+
+          group.style.marginBottom = (config.styles.marginBottom || 0) + 'px'
+          group.dataset.groupKey = key
+
+          const hasPersisted = typeof groupOpenState[key] === 'boolean'
+          const defaultOpen = isDropdown && layout === 'sidebar' && !isMobilePreview && orderIndex === 0
+          const startOpen = hasPersisted ? groupOpenState[key] : (isAccordion ? false : defaultOpen)
+
+          if (startOpen) group.classList.add('open')
+          groupOpenState[key] = startOpen
+
+          const renderedLabel = displayLabel || label
+
+          /* Truncation */
+          const applyMockTruncation = container => {
+            if (!config.truncateFilters || !container) return
+            const maxVisible = Math.max(parseInt(config.truncateMax, 10) || 0, 0)
+            const optionNodes = Array.from(container.children).filter(node => node.classList.contains('mock-option'))
+            if (optionNodes.length <= maxVisible) return
+            const hidden = optionNodes.slice(maxVisible)
+            const hiddenWrap = document.createElement('div')
+            hiddenWrap.className = 'mock-truncate-hidden'
+            hiddenWrap.style.height = '0px'
+            hiddenWrap.style.overflow = 'hidden'
+            hiddenWrap.setAttribute('aria-hidden', 'true')
+            hidden.forEach(node => hiddenWrap.appendChild(node))
+
+            const toggle = document.createElement('button')
+            toggle.type = 'button'
+            toggle.className = 'mock-truncate-toggle'
+            toggle.textContent = config.textLabels.showMore || 'Show more'
+            toggle.setAttribute('aria-expanded', 'false')
+
+            const setExpanded = expanded => {
+                const startHeight = hiddenWrap.offsetHeight
+                const targetHeight = expanded ? hiddenWrap.scrollHeight : 0
+                hiddenWrap.style.height = `${startHeight}px`
+                hiddenWrap.setAttribute('aria-hidden', expanded ? 'false' : 'true')
+                toggle.textContent = expanded ? config.textLabels.showLess || 'Show less' : config.textLabels.showMore || 'Show more'
+                toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false')
+                requestAnimationFrame(() => { hiddenWrap.style.height = `${targetHeight}px` })
+                const tidy = () => {
+                    if (expanded) hiddenWrap.style.height = 'auto'
+                    hiddenWrap.removeEventListener('transitionend', tidy)
+                }
+                hiddenWrap.addEventListener('transitionend', tidy)
+            }
+            toggle.onclick = () => setExpanded(toggle.getAttribute('aria-expanded') !== 'true')
+            container.appendChild(hiddenWrap)
+            container.appendChild(toggle)
+          }
+
+          /* "All" Button Logic */
+          const allBtn = createFilterControl(config.textLabels.allText, key, true)
+
+          if (isDropdown) {
+            const head = document.createElement('div')
+            head.className = 'mock-dropdown-header' + (!shouldShowLabel ? ' hide-label' : '')
+            head.setAttribute('role', 'button')
+            head.innerHTML = `${shouldShowLabel ? renderedLabel : ''} <svg class="mock-caret" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>`
+            const optsDiv = document.createElement('div')
+            optsDiv.className = 'mock-dropdown-content'
+            optsDiv.style.gap = config.styles.gap + 'px'
+            optsDiv.setAttribute('aria-hidden', startOpen ? 'false' : 'true')
+            const toggle = () => {
+                const willOpen = !group.classList.contains('open')
+                if (willOpen) closeOtherOpenMenus(group)
+                group.classList.toggle('open')
+                const isOpen = group.classList.contains('open')
+                head.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+                optsDiv.setAttribute('aria-hidden', isOpen ? 'false' : 'true')
+                if (isOpen) {
+                    optsDiv.style.maxHeight = optsDiv.scrollHeight + "px";
+                    optsDiv.style.opacity = 1;
+                } else {
+                    optsDiv.style.maxHeight = 0;
+                    optsDiv.style.opacity = 0;
+                }
+                groupOpenState[key] = isOpen
+            }
+            head.onclick = toggle
+            group.appendChild(head)
+            optsDiv.appendChild(allBtn)
+            options.forEach(opt => optsDiv.appendChild(createFilterControl(opt, key)))
+            applyMockTruncation(optsDiv)
+            group.appendChild(optsDiv)
+            if (isAccordion && startOpen) { requestAnimationFrame(() => { optsDiv.style.maxHeight = `${optsDiv.scrollHeight}px`; optsDiv.style.opacity = 1; }) }
+          } else {
+            let accordionOptsDiv = null
+            if (shouldShowLabel) {
+              const head = document.createElement('div')
+              head.className = 'mock-filter-header'
+              head.innerHTML = `${renderedLabel}${isAccordion ? ' <svg class="mock-caret" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>' : ''}`
+              if (isAccordion) {
+                head.setAttribute('role', 'button')
+                head.onclick = () => {
+                  group.classList.toggle('open')
+                  const isOpen = group.classList.contains('open')
+                  head.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+                  if (accordionOptsDiv) {
+                      accordionOptsDiv.setAttribute('aria-hidden', isOpen ? 'false' : 'true')
+                      accordionOptsDiv.style.maxHeight = isOpen ? `${accordionOptsDiv.scrollHeight}px` : '0px'
+                      accordionOptsDiv.style.opacity = isOpen ? 1 : 0
+                  }
+                  groupOpenState[key] = isOpen
+                }
+              }
+              group.appendChild(head)
+            }
+            const optsDiv = document.createElement('div')
+            optsDiv.className = 'mock-options'
+            accordionOptsDiv = optsDiv
+            if (isAccordion) {
+              optsDiv.setAttribute('aria-hidden', startOpen ? 'false' : 'true')
+              optsDiv.style.maxHeight = startOpen ? `${optsDiv.scrollHeight}px` : '0px'
+              optsDiv.style.opacity = startOpen ? 1 : 0
+            }
+            optsDiv.style.justifyContent = config.styles.align === 'center' ? 'center' : (config.styles.align === 'right' ? 'flex-end' : 'flex-start')
+            optsDiv.style.gap = config.styles.gap + 'px'
+
+            if (isMobilePreview) {
+              if (effectiveMobileStyle === 'chips') {
+                optsDiv.style.flexWrap = 'nowrap'; optsDiv.style.overflowX = 'auto';
+              } else {
+                optsDiv.style.flexWrap = 'wrap'; optsDiv.style.overflow = 'visible';
+              }
+              if (mobileCheckboxMode) {
+                optsDiv.style.flexDirection = 'column'; optsDiv.style.alignItems = 'flex-start'; optsDiv.style.flexWrap = 'nowrap';
+              }
+            } else {
+              optsDiv.style.flexWrap = 'wrap'
+            }
+
+            optsDiv.appendChild(allBtn)
+            options.forEach(opt => optsDiv.appendChild(createFilterControl(opt, key)))
+            group.appendChild(optsDiv)
+            applyMockTruncation(optsDiv)
+            if (isAccordion && startOpen) { requestAnimationFrame(() => { optsDiv.style.maxHeight = `${optsDiv.scrollHeight}px` }) }
+          }
+          return group
+        }
+
+        function createFilterControl(opt, key, isAll = false) {
+          const selected = Array.isArray(state.filters[key]) ? state.filters[key] : []
+          const isActive = isAll ? selected.length === 0 : selected.includes(opt)
+          let el
+          const labelText = String(opt)
+          const showCounts = !!config.showItemCounts && !isAll
+          const countValue = showCounts ? getOptionCount(key, opt) : null
+
+          const isMobilePreview = document.getElementById('previewFrame')?.classList.contains('mobile')
+          const mobileDisplayMode = config.mobile?.displayStyle || 'chips'
+          const mobileBehavior = config.mobile?.behavior || 'none'
+          const mobileCheckboxMode = isMobilePreview && (mobileBehavior === 'checkbox' || mobileDisplayMode === 'checkbox')
+          const useCheckbox = config.filterLayout === 'checkbox' || mobileCheckboxMode
+
+          if (useCheckbox) {
+            const label = document.createElement('label')
+            label.className = 'mock-label-check mock-option'
+            const chk = document.createElement('input')
+            chk.type = 'checkbox'
+            chk.checked = isActive
+            chk.onchange = () => toggleFilter(key, isAll ? 'ALL_KEY' : opt)
+            label.appendChild(chk)
+            label.appendChild(document.createTextNode(labelText))
+            if (showCounts) {
+              const countEl = document.createElement('span')
+              countEl.className = 'mock-count'
+              countEl.textContent = `(${countValue})`
+              label.appendChild(countEl)
+            }
+            el = label
+          } else {
+            const btn = document.createElement('button')
+            btn.type = 'button'
+            btn.className = 'mock-btn mock-option'
+            btn.appendChild(document.createTextNode(labelText))
+            if (showCounts) {
+              const countEl = document.createElement('span')
+              countEl.className = 'mock-count'
+              countEl.textContent = `(${countValue})`
+              btn.appendChild(countEl)
+            }
+            if (isActive) btn.classList.add('active')
+
+            const s = config.styles
+            const isTextVariant = config.filterLayout === 'inline' && config.desktopInlineVariant === 'text'
+
+            if (isTextVariant) {
+                btn.style.background = 'transparent'
+                btn.style.border = 'none'
+                btn.style.padding = '0'
+                btn.style.color = isActive ? '#000' : '#555'
+                btn.style.fontWeight = isActive ? '600' : '400'
+                if (isActive) btn.style.textDecoration = 'underline'
+            } else if (s.stylePreset === 'underline') {
+                btn.style.background = 'transparent'
+                btn.style.border = 'none'
+                btn.style.borderBottom = `2px solid ${isActive ? s.colorActive.border : 'transparent'}`
+                btn.style.borderRadius = 0
+                btn.style.color = isActive ? s.colorActive.text : s.colorDefault.text
+                btn.style.padding = `${s.paddingVertical}px ${s.paddingHorizontal}px`
+            } else {
+                Object.assign(btn.style, {
+                  borderRadius: `${s.radius}px`,
+                  padding: `${s.paddingVertical}px ${s.paddingHorizontal}px`,
+                  border: `${s.borderWidth}px solid ${isActive ? s.colorActive.border : s.colorDefault.border}`,
+                  background: isActive ? s.colorActive.bg : s.colorDefault.bg,
+                  color: isActive ? s.colorActive.text : s.colorDefault.text
+                })
+            }
+            btn.onclick = e => { e.preventDefault(); toggleFilter(key, isAll ? 'ALL_KEY' : opt) }
+            el = btn
+          }
+          return el
+        }
+
+        function renderMock() {
+          const wrap = document.getElementById('mockWrapper')
+          if (!wrap) return
+
+          const prevSearch = document.getElementById('mockSearchInput')
+          const wasSearchFocused = prevSearch && document.activeElement === prevSearch
+          const selection = wasSearchFocused ? { start: prevSearch.selectionStart, end: prevSearch.selectionEnd } : null
+
+          const isMobilePreview = document.getElementById('previewFrame')?.classList.contains('mobile')
+          const mobileDisplayMode = config.mobile?.displayStyle || 'chips'
+          const mobileBehavior = config.mobile?.behavior || 'none'
+          const effectiveMobileStyle = (mobileBehavior === 'checkbox' || mobileDisplayMode === 'checkbox') ? 'checkbox' : mobileDisplayMode
+          const pillStyle = ['pill', 'pills', 'badge', 'badges'].includes((config.tagStyle?.style || 'text').toLowerCase())
+          const metaLayout = (config.metaDisplay?.metaLayout || 'stacked-above').toLowerCase()
+          const metaLayoutClassName = mapMetaLayoutClass(metaLayout)
+          const stickyEnabled = !!config.stickySidebar && config.layout === 'sidebar'
+          const sortLabel = (config.textLabels?.sortText || 'Sort By').trim() || 'Sort By'
+
+          wrap.innerHTML = ''
+          const mobileClasses = isMobilePreview ? ` mobile-style-${effectiveMobileStyle} mobile-behavior-${mobileBehavior}` : ''
+          const inlineVariantClass = (config.filterLayout === 'inline' && config.desktopInlineVariant === 'text') ? ' inline-variant-text' : ''
+          wrap.className = `mock-wrapper mock-layout-${config.layout}${mobileClasses}${inlineVariantClass} mock-anim ${config.gridAnimation}${pillStyle ? ' pf-tag-style-pills' : ''}${stickyEnabled ? ' sticky-enabled' : ''}`
+
+          prepareMockWrapper(wrap)
+
+          const speedMap = { slow: '0.8s', normal: '0.5s', fast: '0.3s' }
+          wrap.style.setProperty('--mock-anim-duration', speedMap[config.animationSpeed] || '0.5s')
+          wrap.style.setProperty('--mock-anim-delay-step', config.animationStagger === false ? '0ms' : '60ms')
+          wrap.style.setProperty('--pf-group-gap', `${config.styles.marginBottom || 0}px`)
+          wrap.style.setProperty('--pf-sticky-top', `${parseInt(config.stickyTopSpacing, 10) || 0}px`)
+          wrap.style.setProperty('--pf-tag-bg', config.tagStyle?.bg || '#f0f0f0')
+          wrap.style.setProperty('--pf-tag-text', config.tagStyle?.text || '#333333')
+          wrap.style.setProperty('--pf-tag-radius', `${parseInt(config.tagStyle?.radius, 10) || 4}px`)
+          wrap.style.setProperty('--pf-tag-border-width', `${parseInt(config.tagStyle?.borderWidth, 10) || 0}px`)
+          wrap.style.setProperty('--pf-tag-border-color', config.tagStyle?.borderColor || '#cccccc')
+          wrap.style.setProperty('--pf-tag-pad-x', `${parseInt(config.tagStyle?.padX, 10) || 6}px`)
+          wrap.style.setProperty('--pf-tag-pad-y', `${parseInt(config.tagStyle?.padY, 10) || 2}px`)
+          wrap.style.setProperty('--pf-tag-font-size', isNaN(parseInt(config.tagStyle?.fontSize, 10)) ? '14px' : `${parseInt(config.tagStyle?.fontSize, 10)}px`)
+          wrap.style.setProperty('--pf-truncate-font-size', isNaN(parseInt(config.truncateToggle?.fontSize, 10)) ? '14px' : `${parseInt(config.truncateToggle?.fontSize, 10)}px`)
+          wrap.style.setProperty('--pf-truncate-text-color', config.truncateToggle?.textColor || '#333')
+
+          const sidebarWidthSetting = clampPercent(config.sidebarWidthPercent ?? 30) ?? 30
+          const gridWidthSetting = clampPercent(config.gridWidthPercent ?? 70) ?? 70
+          wrap.style.setProperty('--pf-sidebar-width', `${sidebarWidthSetting}%`)
+          wrap.style.setProperty('--pf-grid-width', `${gridWidthSetting}%`)
+          wrap.classList.toggle('pf-show-meta-labels', !!config.showMetaLabels)
+          forceMobileCheckbox = isMobilePreview && (mobileBehavior === 'checkbox' || mobileDisplayMode === 'checkbox')
+
+          /* CONTROLS STRUCTURE */
+          const controls = document.createElement('div')
+          controls.className = 'mock-controls'
+
+          if (config.layout === 'top') {
+              const topRow = document.createElement('div')
+              topRow.className = 'mock-controls-top-row'
+
+              const leftCol = document.createElement('div')
+              leftCol.className = 'mock-controls-left'
+
+              const rightCol = document.createElement('div')
+              rightCol.className = 'mock-controls-right'
+
+              // Filter Groups -> Left
+              let renderIndex = 0
+              const appendGroup = node => { if(node){ leftCol.appendChild(node); renderIndex++ } }
+              appendGroup(renderFilterGroup(config.textLabels.defaultFilterName, getOptionsFromData('tags'), 'tags', undefined, renderIndex))
+              appendGroup(renderFilterGroup('Location', LOCATIONS, 'location', undefined, renderIndex))
+              appendGroup(renderFilterGroup('Year', YEARS, 'year', undefined, renderIndex))
+              topRow.appendChild(leftCol)
+
+              // Search & Sort -> Right
+              if (config.searchEnabled) {
+                const s = document.createElement('input')
+                s.id = 'mockSearchInput'
+                s.placeholder = config.textLabels.searchPlaceholder
+                s.value = state.search
+                s.oninput = e => { state.search = e.target.value.toLowerCase(); state.page = 1; renderMock() }
+                s.onkeydown = e => { if (e.key === 'Enter') e.preventDefault() }
+                rightCol.appendChild(s)
+                if (wasSearchFocused) {
+                  setTimeout(() => { s.focus(); if (selection) s.setSelectionRange(selection.start, selection.end) }, 0)
+                }
+              }
+              if (config.sortEnabled) {
+                  const sel = document.createElement('select')
+                  sel.className = 'mock-sort-select'
+                  let options = `<option value="original">${sortLabel}</option><option value="asc">Name (A-Z)</option><option value="desc">Name (Z-A)</option>`
+                  if (config.displayYearInSort) options += `<option value="date-newest">Year (Newest)</option><option value="date-oldest">Year (Oldest)</option>`
+                  sel.innerHTML = options
+                  if (!config.displayYearInSort && state.sort.startsWith('date')) state.sort = 'original'
+                  sel.value = state.sort
+                  sel.onchange = e => { state.sort = e.target.value; renderMock() }
+                  rightCol.appendChild(sel)
+              }
+              if (rightCol.children.length > 0) topRow.appendChild(rightCol)
+              controls.appendChild(topRow)
+
+              // Reset Row
+              if (config.showResetButton) {
+                  const resetRow = document.createElement('div')
+                  resetRow.className = 'mock-reset-row'
+                  const reset = document.createElement('button')
+                  reset.className = 'mock-load-btn'
+                  reset.textContent = config.textLabels.resetText
+                  reset.onclick = () => resetFilters()
+                  resetRow.appendChild(reset)
+                  controls.appendChild(resetRow)
+              }
+
+          } else {
+              // Sidebar Layout (Standard Column)
+              if (config.searchEnabled) {
+                const s = document.createElement('input')
+                s.id = 'mockSearchInput'
+                s.placeholder = config.textLabels.searchPlaceholder
+                s.style.marginBottom = '15px'; s.style.width = '100%'
+                s.value = state.search
+                s.oninput = e => { state.search = e.target.value.toLowerCase(); state.page = 1; renderMock() }
+                controls.appendChild(s)
+                if (wasSearchFocused) {
+                  setTimeout(() => { s.focus(); if (selection) s.setSelectionRange(selection.start, selection.end) }, 0)
+                }
+              }
+              let renderIndex = 0
+              const appendGroup = node => { if(node){ controls.appendChild(node); renderIndex++ } }
+              appendGroup(renderFilterGroup(config.textLabels.defaultFilterName, getOptionsFromData('tags'), 'tags', undefined, renderIndex))
+              appendGroup(renderFilterGroup('Location', LOCATIONS, 'location', undefined, renderIndex))
+              appendGroup(renderFilterGroup('Year', YEARS, 'year', undefined, renderIndex))
+
+              if (config.sortEnabled || config.showResetButton) {
+                const sortDiv = document.createElement('div')
+                sortDiv.className = 'mock-sort-row'
+                if (config.sortEnabled) {
+                  const sel = document.createElement('select')
+                  sel.className = 'mock-sort-select'
+                  let options = `<option value="original">${sortLabel}</option><option value="asc">Name (A-Z)</option><option value="desc">Name (Z-A)</option>`
+                  if (config.displayYearInSort) options += `<option value="date-newest">Year (Newest)</option><option value="date-oldest">Year (Oldest)</option>`
+                  sel.innerHTML = options
+                  sel.value = state.sort
+                  sel.onchange = e => { state.sort = e.target.value; renderMock() }
+                  sortDiv.appendChild(sel)
+                }
+                if (config.showResetButton) {
+                  const reset = document.createElement('button')
+                  reset.className = 'mock-load-btn'; reset.style.marginLeft = config.sortEnabled ? 'auto' : '0'
+                  reset.textContent = config.textLabels.resetText
+                  reset.onclick = () => resetFilters()
+                  sortDiv.appendChild(reset)
+                }
+                if (sortDiv.children.length) controls.appendChild(sortDiv)
+              }
+          }
+
+          wrap.appendChild(controls)
+
+          /* CONTENT */
+          const contentCol = document.createElement('div')
+          contentCol.className = 'mock-content'
+          const grid = document.createElement('div')
+          grid.className = 'mock-grid'
+
+          const filtered = DATA.filter(item => {
+            const selectedTags = Array.isArray(state.filters.tags) ? state.filters.tags : []
+            const selectedLoc = Array.isArray(state.filters.location) ? state.filters.location : []
+            const selectedYear = Array.isArray(state.filters.year) ? state.filters.year : []
+            const tagMatch = !selectedTags.length || (item.tags && selectedTags.some(v => item.tags.includes(v)))
+            const locMatch = !selectedLoc.length || selectedLoc.includes(item.location)
+            const yearMatch = !selectedYear.length || selectedYear.some(v => String(v) === String(item.year))
+            const metaSearch = Object.values(item.meta || {}).map(v => (Array.isArray(v) ? v.join(' ') : v)).join(' ')
+            const searchMatch = !state.search || [item.title, (item.tags || []).join(' '), item.location, item.year, item.excerpt, item.author, metaSearch].join(' ').toLowerCase().includes(state.search)
+            return tagMatch && locMatch && yearMatch && searchMatch
+          })
+
+          if (!config.randomOrder) { previewRandomMap = null; lastRandomEnabled = false; }
+          if (config.randomOrder && state.sort === 'original') {
+            if (!previewRandomMap || previewRandomMap.size !== DATA.length) {
+              previewRandomMap = new Map()
+              shuffleArray(DATA.map(d => d.id)).forEach((id, idx) => previewRandomMap.set(id, idx))
+            }
+            lastRandomEnabled = true
+            filtered.sort((a, b) => {
+              const aIdx = previewRandomMap?.get(a.id) ?? a.id
+              const bIdx = previewRandomMap?.get(b.id) ?? b.id
+              return aIdx - bIdx
+            })
+          }
+          if (state.sort === 'asc') filtered.sort((a, b) => a.title.localeCompare(b.title))
+          if (state.sort === 'desc') filtered.sort((a, b) => b.title.localeCompare(a.title))
+          if (state.sort === 'date-newest') filtered.sort((a, b) => b.year - a.year)
+          if (state.sort === 'date-oldest') filtered.sort((a, b) => a.year - b.year)
+
+          const limit = config.pagination.type === 'none' ? filtered.length : state.page * config.pagination.itemsPerPage
+          const shown = filtered.slice(0, limit)
+
+          const showCustomMeta = config.metaDisplay.showCustomMeta ?? config.metaDisplay.showCustom
+          let customFieldNames = showCustomMeta ? parseCustomFieldList(config.metaDisplay.customMetaFields) : []
+          if (showCustomMeta && customFieldNames.length === 0) customFieldNames = ['Author']
+          const ensureField = label => { if (!customFieldNames.some(f => f.toLowerCase() === label.toLowerCase())) customFieldNames.push(label) }
+          if (showCustomMeta && config.metaDisplay.showLocation) ensureField('Location')
+          if (showCustomMeta && config.metaDisplay.showYear) ensureField('Year')
+
+          const delayStep = config.animationStagger === false ? 0 : 60
+          const createdItems = []
+
+          shown.forEach((item, idx) => {
+            const el = document.createElement('div')
+            el.className = 'mock-item'
+            el.classList.add(metaLayoutClassName)
+
+            const delay = config.gridAnimation !== 'none' ? idx * delayStep : 0
+            el.style.setProperty('--mock-anim-delay', `${delay}ms`)
+
+            const metaPieces = []
+            if (config.metaDisplay.showTags && item.tags && item.tags.length) {
+              if (pillStyle) {
+                item.tags.forEach(t => metaPieces.push(`<span class="mock-meta-item mock-meta-tag">${t}</span>`))
+              } else {
+                metaPieces.push(`<span class="mock-meta-item mock-meta-tag">${(item.tags || []).join(config.metaDisplay.tagDelimiter || ' ')}</span>`)
+              }
+            }
+            if (config.metaDisplay.showLocation && !showCustomMeta) {
+                const labelHTML = config.showMetaLabels ? `<span class="mock-meta-label">Location: </span>` : '';
+                metaPieces.push(`<span class="mock-meta-item mock-meta-location">${labelHTML}${item.location}</span>`)
+            }
+            if (config.metaDisplay.showYear && !showCustomMeta) {
+                const labelHTML = config.showMetaLabels ? `<span class="mock-meta-label">Year: </span>` : '';
+                metaPieces.push(`<span class="mock-meta-item mock-meta-year">${labelHTML}${item.year}</span>`)
+            }
+            if (showCustomMeta) {
+              customFieldNames.forEach(name => {
+                const rawVal = getMetaValue(item, name)
+                if (rawVal === undefined || rawVal === null) return
+                const delimiter = name.toLowerCase() === 'location' ? ' ' : config.metaDisplay.tagDelimiter || ' '
+                const valueText = Array.isArray(rawVal) ? rawVal.join(delimiter) : rawVal
+                if (String(valueText).trim() === '') return
+                const label = name.trim() || name
+                const safeKey = sanitizeKeyForClass(label || 'custom')
+                const labelHTML = config.showMetaLabels ? `<span class="custom-tag-${safeKey}">${label}: </span>` : '';
+                metaPieces.push(`<div class="custom-tag-${safeKey}-wrapper mock-meta-item mock-meta-custom">${labelHTML}<span class="custom-tag-value">${valueText}</span></div>`)
+              })
+            }
+
+            const metaWrapperHtml = metaPieces.length ? `<div class="mock-item-meta-wrapper">${metaPieces.join('')}</div>` : ''
+            const excerptHtml = config.metaDisplay.showExcerpt ? `<div class="mock-item-excerpt">${item.excerpt}</div>` : ''
+
+            const metaBeforeTitle = metaLayoutClassName === 'meta-layout-stacked-above' || metaLayoutClassName.includes('overlay')
+            const titleHtml = `<h4 class="portfolio-title">${item.title}</h4>`
+            const combined = metaBeforeTitle ? `${metaWrapperHtml}${titleHtml}` : `${titleHtml}${metaWrapperHtml}`
+
+            el.innerHTML = `
+               <div class="mock-item-image-placeholder"></div>
+               <div class="mock-item-txt ${metaLayoutClassName}">
+                   ${combined}
+                   ${excerptHtml}
+               </div>`
+            grid.appendChild(el)
+            createdItems.push(el)
+          })
+
+          contentCol.appendChild(grid)
+          requestAnimationFrame(() => { replayMockAnimations(grid, createdItems, config.gridAnimation, config.animationStagger) })
+
+          if (!shown.length) {
+            const empty = document.createElement('div')
+            empty.className = 'mock-empty'
+            empty.textContent = config.noResultsText || 'No results found.'
+            contentCol.appendChild(empty)
+          }
+
+          if (config.pagination.type !== 'none' && shown.length < filtered.length) {
+            const pag = document.createElement('div')
+            pag.className = 'mock-pagination'
+            if (config.pagination.showProgress) {
+              pag.innerHTML += `<div class="mock-pag-txt">Showing ${shown.length} of ${filtered.length} Projects</div>`
+            }
+            const btn = document.createElement('button')
+            btn.className = 'mock-load-btn'
+            btn.textContent = config.pagination.loadMoreLabel
+            btn.onclick = () => { state.page++; renderMock() }
+            pag.appendChild(btn)
+            contentCol.appendChild(pag)
+          }
+          wrap.appendChild(contentCol)
+        }
+
+        /* --- UPDATE & INIT --- */
+        function updateAll() {
+          try {
+            // Mobile Style Helper Logic
+            const mobileStyle = document.getElementById('mobileDisplayStyle').value
+            const mobileHelper = document.getElementById('mobileHelperText')
+            if (mobileHelper) {
+                const map = { chips: 'Best space saver.', wrap: 'Shows all tags.', accordion: 'Expandable list.', checkbox: 'Good for many items.' }
+                mobileHelper.textContent = map[mobileStyle] || ''
+            }
+
+            // Motion UI Logic
+            const gridAnim = document.getElementById('gridAnimation')?.value || 'fade-up'
+            const showMotionControls = gridAnim !== 'none'
+            if (document.getElementById('animSpeedRow')) document.getElementById('animSpeedRow').style.display = showMotionControls ? 'block' : 'none'
+            if (document.getElementById('animStaggerRow')) document.getElementById('animStaggerRow').style.display = showMotionControls ? 'flex' : 'none'
+
+            // Mobile Logic
+            let mobileDisplayStyle = 'wrap'
+            let mobileBehavior = 'none'
+            if (mobileStyle === 'wrap') mobileDisplayStyle = 'wrap'
+            else if (mobileStyle === 'checkbox') { mobileDisplayStyle = 'checkbox'; mobileBehavior = 'checkbox' }
+            else if (mobileStyle === 'accordion') { mobileDisplayStyle = 'wrap'; mobileBehavior = 'accordion' }
+
+            // Filter Layout Logic
+            const filterLayoutValue = document.getElementById('filterLayout').value
+            const inlineVariantValue = document.getElementById('desktopInlineVariant').value || 'buttons'
+            const isInlineLayout = filterLayoutValue === 'inline'
+
+            const showFilterLabelToggle = document.getElementById('showFilterLabel')
+            if (document.getElementById('showFilterLabelRow')) document.getElementById('showFilterLabelRow').style.display = isInlineLayout ? 'flex' : 'none'
+            if (showFilterLabelToggle) showFilterLabelToggle.disabled = !isInlineLayout
+            const effectiveShowLabel = isInlineLayout ? (showFilterLabelToggle?.checked ?? true) : true
+
+            // Custom Meta Logic
+            const customToggle = document.getElementById('m_cust')
+            if (document.getElementById('customMetaRow')) document.getElementById('customMetaRow').style.display = customToggle?.checked ? 'block' : 'none'
+
+            // Tag Pills Logic
+            const tagStyleVal = document.getElementById('tagStyle')?.value || 'text'
+            const showPillControls = ['pill', 'pills', 'badge', 'badges'].includes(tagStyleVal)
+            if (document.getElementById('tagPillSettings')) document.getElementById('tagPillSettings').style.display = showPillControls ? 'block' : 'none'
+
+            // Sticky & Width Logic
+            const isSidebar = document.getElementById('layout').value === 'sidebar'
+            if (document.getElementById('stickyRow')) document.getElementById('stickyRow').style.display = isSidebar ? 'flex' : 'none'
+            if (document.getElementById('stickySpacingRow')) document.getElementById('stickySpacingRow').style.display = (isSidebar && document.getElementById('stickySidebar').checked) ? 'block' : 'none'
+            if (document.getElementById('sidebarWidthRow')) document.getElementById('sidebarWidthRow').style.display = isSidebar ? 'flex' : 'none'
+            if (document.getElementById('gridWidthRow')) document.getElementById('gridWidthRow').style.display = isSidebar ? 'flex' : 'none'
+
+            // Truncate Logic
+            if (document.getElementById('truncateSettings')) document.getElementById('truncateSettings').style.display = document.getElementById('truncateFilters').checked ? 'block' : 'none'
+
+            // Delimiter Logic
+            const tagDelimiterMode = document.getElementById('tagDelimiterMode').value
+            if (document.getElementById('tagDelimiterCustom')) document.getElementById('tagDelimiterCustom').style.display = tagDelimiterMode === 'custom' ? 'block' : 'none'
+
+            const safeInt = (id, def) => parseInt(document.getElementById(id)?.value, 10) || def
+            // For CSS number strings in JSON as requested
+            const safeStr = (id, def) => String(parseInt(document.getElementById(id)?.value, 10) || def)
+            const safeClamp = (val, def) => { const n = Number(val); return (isNaN(n) ? def : Math.min(90, Math.max(10, n))); }
+
+            config = {
+              layout: document.getElementById('layout').value,
+              filterLayout: filterLayoutValue,
+              searchEnabled: document.getElementById('searchEnabled').checked,
+              sortEnabled: document.getElementById('sortEnabled').checked,
+              displayYearInSort: document.getElementById('displayYearInSort').checked,
+              showResetButton: document.getElementById('showResetButton').checked,
+              defaultSortOrder: document.getElementById('defaultSortOrder').value,
+              multipleFilterGroups: document.getElementById('multipleFilterGroups').checked,
+              hideSingleValueFilters: document.getElementById('hideSingleValueFilters').checked,
+              showFilterLabel: effectiveShowLabel,
+              allowMultiSelect: document.getElementById('allowMultiSelect').checked,
+              showItemCounts: document.getElementById('showItemCounts').checked,
+              desktopInlineVariant: inlineVariantValue,
+              noResultsText: document.getElementById('noResultsText').value,
+              randomOrder: document.getElementById('randomOrder').checked,
+              stickySidebar: document.getElementById('stickySidebar').checked,
+              stickyTopSpacing: safeInt('stickyTopSpacing', 20),
+              truncateFilters: document.getElementById('truncateFilters').checked,
+              truncateMax: safeInt('truncateMax', 5),
+              truncateToggle: {
+                fontSize: safeInt('truncateToggleFontSize', 14),
+                textColor: document.getElementById('truncateToggleColor').value
+              },
+              textLabels: {
+                allText: document.getElementById('allText').value,
+                resetText: document.getElementById('resetText').value,
+                searchPlaceholder: document.getElementById('searchPlaceholder').value,
+                sortText: document.getElementById('sortText').value,
+                defaultFilterName: document.getElementById('defaultFilterName').value,
+                showMore: document.getElementById('showMoreLabel').value,
+                showLess: document.getElementById('showLessLabel').value
+              },
+              pagination: {
+                type: document.getElementById('pagType').value === 'infinite' ? 'none' : document.getElementById('pagType').value,
+                itemsPerPage: safeInt('itemsPerPage', 12),
+                loadMoreLabel: document.getElementById('loadMoreLabel').value,
+                showProgress: document.getElementById('showProgress').checked
+              },
+              styles: {
+                stylePreset: document.getElementById('stylePreset').value,
+                align: document.getElementById('align').value,
+                gap: safeStr('gap', 10),
+                marginBottom: safeStr('marginBottom', 30),
+                radius: safeStr('radius', 4),
+                paddingVertical: safeStr('padV', 8),
+                paddingHorizontal: safeStr('padH', 16),
+                borderWidth: safeStr('borderWidth', 1),
+                colorDefault: { bg: document.getElementById('c_bg_def').value, text: document.getElementById('c_txt_def').value, border: document.getElementById('c_bor_def').value },
+                colorActive: { bg: document.getElementById('c_bg_act').value, text: document.getElementById('c_txt_act').value, border: document.getElementById('c_bor_act').value }
+              },
+              tagStyle: {
+                style: document.getElementById('tagStyle').value.toLowerCase(),
+                bg: document.getElementById('tagBgColor').value,
+                text: document.getElementById('tagTextColor').value,
+                radius: safeInt('tagRadius', 4),
+                borderColor: document.getElementById('tagBorderColor').value,
+                borderWidth: safeInt('tagBorderWidth', 0),
+                padX: safeInt('tagPadX', 6),
+                padY: safeInt('tagPadY', 2),
+                fontSize: safeInt('tagFontSize', 14)
+              },
+              metaDisplay: {
+                showTags: document.getElementById('m_tags').checked,
+                tagDelimiter: resolveTagDelimiter(tagDelimiterMode, document.getElementById('tagDelimiterCustom').value),
+                tagDelimiterMode: tagDelimiterMode,
+                tagDelimiterCustom: document.getElementById('tagDelimiterCustom').value,
+                metaLayout: document.getElementById('metaLayout').value.toLowerCase(),
+                showYear: document.getElementById('m_year').checked,
+                showLocation: document.getElementById('m_loc').checked,
+                showExcerpt: document.getElementById('m_exc').checked,
+                showCustomMeta: document.getElementById('m_cust').checked,
+                customMetaFields: document.getElementById('customMetaFields').value,
+                showCustom: document.getElementById('m_cust').checked
+              },
+              showMetaLabels: document.getElementById('showMetaLabels').checked,
+              sidebarWidthPercent: safeClamp(document.getElementById('sidebarWidthPercent').value, 30),
+              gridWidthPercent: safeClamp(document.getElementById('gridWidthPercent').value, 70),
+              mobile: {
+                displayStyle: mobileDisplayStyle,
+                behavior: mobileBehavior
+              },
+              gridAnimation: gridAnim,
+              animationSpeed: document.getElementById('animationSpeed').value,
+              animationStagger: document.getElementById('animationStagger').checked
+            }
+
+            if (!sortInitialized) { state.sort = config.defaultSortOrder || 'original'; sortInitialized = true; }
+            // If sort changed via settings, update state
+            if (state.sort !== config.defaultSortOrder) {
+                // If user hasn't manually interacted, sync.
+                // Since this is a config generator, mostly we want WYSIWYG
+                state.sort = config.defaultSortOrder
+            }
+
+            if (lastLayout !== config.layout || lastFilterLayout !== config.filterLayout || lastMobileBehavior !== config.mobile.behavior) {
+                groupOpenState = {}
+            }
+            lastLayout = config.layout; lastFilterLayout = config.filterLayout; lastMobileBehavior = config.mobile.behavior; lastMobileDisplayStyle = mobileStyle;
+
+            renderMock()
+            generateCode()
+          } catch (e) {
+            console.error('Update Error:', e)
+            document.getElementById('codeOutput').textContent = 'Error: ' + e.message
+          }
+        }
+
+        function generateCode() {
+          const cfg = {
+            layout: config.layout,
+            filterLayout: config.filterLayout,
+            searchEnabled: config.searchEnabled,
+            sortEnabled: config.sortEnabled,
+            displayYearInSort: config.displayYearInSort,
+            showResetButton: config.showResetButton,
+            defaultSortOrder: config.defaultSortOrder,
+            multipleFilterGroups: config.multipleFilterGroups,
+            hideSingleValueFilters: config.hideSingleValueFilters,
+            showFilterLabel: config.showFilterLabel,
+            allowMultiSelect: config.allowMultiSelect,
+            showItemCounts: config.showItemCounts,
+            desktopInlineVariant: config.desktopInlineVariant,
+            noResultsText: config.noResultsText,
+            randomOrder: config.randomOrder,
+            stickySidebar: config.stickySidebar,
+            stickyTopSpacing: config.stickyTopSpacing,
+            truncateFilters: config.truncateFilters,
+            truncateMax: config.truncateMax,
+            truncateToggle: config.truncateToggle,
+            textLabels: config.textLabels,
+            pagination: config.pagination,
+            styles: config.styles,
+            tagStyle: config.tagStyle,
+            metaDisplay: config.metaDisplay,
+            showMetaLabels: config.showMetaLabels,
+            sidebarWidthPercent: config.sidebarWidthPercent,
+            gridWidthPercent: config.gridWidthPercent,
+            mobile: config.mobile,
+            gridAnimation: config.gridAnimation,
+            animationSpeed: config.animationSpeed,
+            animationStagger: config.animationStagger
+          }
+          const js = `\n<style>#gridThumbs{opacity:0;transition:opacity 0.2s ease;}</style>\n<link rel="stylesheet" href="portfolio-filter-v2.css">\n<script>\nwindow.PORTFOLIO_CONFIG = ${JSON.stringify(cfg, null, 4)};\n<\/script>\n<script src="portfolio-filter-v2.js" defer><\/script>`
+          document.getElementById('codeOutput').textContent = js
+        }
+
+        function initDesktopStyleSelect() {
+          const layoutInput = document.getElementById('filterLayout')
+          const variantInput = document.getElementById('desktopInlineVariant')
+          const select = document.getElementById('desktopStyleSelect')
+          const helper = document.getElementById('desktopStyleHelper')
+          const helperCopy = {
+            buttons: 'Solid clickable pills.',
+            text: 'Simple text links.',
+            dropdown: 'Space-saving dropdowns.',
+            checkbox: 'Standard checkboxes.'
+          }
+          if (!select) return
+          const apply = (val, shouldUpdate = true) => {
+            if (val === 'dropdown') { layoutInput.value = 'dropdown'; variantInput.value = 'buttons' }
+            else if (val === 'checkbox') { layoutInput.value = 'checkbox'; variantInput.value = 'buttons' }
+            else { layoutInput.value = 'inline'; variantInput.value = val === 'text' ? 'text' : 'buttons' }
+            if (helper) helper.textContent = helperCopy[val]
+            if (shouldUpdate) updateAll()
+          }
+          select.addEventListener('change', e => apply(e.target.value))
+
+          let initial = 'buttons'
+          if (layoutInput.value === 'dropdown') initial = 'dropdown'
+          else if (layoutInput.value === 'checkbox') initial = 'checkbox'
+          else if (layoutInput.value === 'inline' && variantInput.value === 'text') initial = 'text'
+          select.value = initial
+          apply(initial, false)
+        }
+
+        document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updateAll))
+
+        window.setTab = function(t) { document.body.className = 'tab-' + t }
+        window.setDev = function(d) {
+            document.getElementById('previewFrame').className = d
+            document.querySelectorAll('.device-toggle button').forEach(b => b.classList.remove('active'))
+            document.getElementById(d + 'Toggle').classList.add('active')
+            groupOpenState = {}
+            renderMock()
+        }
+        window.togGroup = function(h) { h.parentNode.classList.toggle('open') }
+        window.copyCode = function() {
+            navigator.clipboard.writeText(document.getElementById('codeOutput').textContent)
+            const btn = document.getElementById('copyBtn')
+            const original = btn.innerHTML
+            btn.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Copied!
+            `
+            btn.classList.add('copied')
+            setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied') }, 2000)
+        }
+
+        initDesktopStyleSelect()
+        updateAll()
+
+      } catch (err) {
+        document.body.innerHTML = '<h1>Error</h1><p>' + err.message + '</p>'
+      }
+    </script>
+</body>
+</html>
