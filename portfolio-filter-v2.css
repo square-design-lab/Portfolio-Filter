@@ -145,13 +145,8 @@ body.pf-ready #gridThumbs {
 }
 
 /* --- SUBCATEGORIES --- */
-.filter-item-wrapper {
-    width: 100%;
-}
-
 .filter-options.children {
     padding-left: 20px;
-    /* Indent */
     margin-top: 5px;
     display: none;
     flex-direction: column;
@@ -814,6 +809,13 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    /* width is layout-dependent — overridden below */
+}
+
+/* Inline layout: items must be auto-width so they flow horizontally.
+   This also overrides any external stylesheet that sets width:100% */
+.portfolio-control-panel.layout-inline .filter-item-wrapper {
+    width: auto;
 }
 
 .filter-options.children {
@@ -826,6 +828,47 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
 
 .filter-item-wrapper.active .filter-options.children {
     display: flex;
+}
+
+/* ── Topbar inline: subcategory bar floats below without shifting grid ── */
+.portfolio-control-panel.pf-topbar.layout-inline {
+    position: relative;
+}
+
+.portfolio-control-panel.pf-topbar.layout-inline .filter-options.children {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 8px 0;
+    padding-left: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--pf-gap);
+    background: var(--pf-subfilter-bg, #fff);
+    border-bottom: 1px solid var(--pf-border-def, #ddd);
+    z-index: 100;
+    animation: pfSubfilterIn 0.18s ease;
+}
+
+@keyframes pfSubfilterIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile: revert subcategory bar to normal in-flow layout */
+@media (max-width: 1023px) {
+    .portfolio-control-panel.pf-topbar.layout-inline .filter-options.children {
+        position: static;
+        flex-direction: column;
+        padding: 0;
+        padding-left: 20px;
+        margin-top: 5px;
+        border-bottom: none;
+        background: transparent;
+        animation: none;
+    }
 }
 
 .filter-label-checkbox {

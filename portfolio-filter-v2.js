@@ -11,7 +11,7 @@
         filterLayout: 'inline', // inline, dropdown, checkbox
         desktopInlineVariant: 'buttons', // buttons | text
 
-        searchEnabled: true,
+        searchEnabled: false,
         sortEnabled: false,
         multipleFilterGroups: true,
         allowMultiSelect: false,
@@ -104,10 +104,6 @@
     if (window.PORTFOLIO_CONFIG?.textLabels) CONFIG.textLabels = { ...DEFAULT_CONFIG.textLabels, ...window.PORTFOLIO_CONFIG.textLabels };
     if (window.PORTFOLIO_CONFIG?.tagStyle) CONFIG.tagStyle = { ...DEFAULT_CONFIG.tagStyle, ...window.PORTFOLIO_CONFIG.tagStyle };
     if (window.PORTFOLIO_CONFIG?.truncateToggle) CONFIG.truncateToggle = { ...DEFAULT_CONFIG.truncateToggle, ...window.PORTFOLIO_CONFIG.truncateToggle };
-    if (typeof window.PORTFOLIO_CONFIG?.sortEnabled !== 'boolean') {
-        CONFIG.sortEnabled = (CONFIG.layout || '').toLowerCase() === 'top';
-    }
-
     const TEXT = {
         allText: CONFIG.textLabels?.allText ?? CONFIG.allText ?? 'All',
         resetText: CONFIG.textLabels?.resetText ?? CONFIG.resetText ?? 'Reset All',
@@ -429,6 +425,23 @@
             clampPercent(CONFIG.sidebarWidthPercent ?? 30) ?? 30;
         const gridPercent = clampPercent(CONFIG.gridWidthPercent ?? 70) ?? 70;
 
+        // Detect page background for the topbar inline subcategory bar overlay
+        let subfilterBg = '#ffffff';
+        try {
+            const bodyBg = getComputedStyle(document.body).backgroundColor;
+            const isTransparent = v => !v || v === 'rgba(0, 0, 0, 0)' || v === 'transparent';
+            if (!isTransparent(bodyBg)) {
+                subfilterBg = bodyBg;
+            } else {
+                const sectionEl = document.getElementById('gridThumbs')
+                    ?.closest('.page-section, section, .content');
+                if (sectionEl) {
+                    const bg = getComputedStyle(sectionEl).backgroundColor;
+                    if (!isTransparent(bg)) subfilterBg = bg;
+                }
+            }
+        } catch (e) {}
+
         // CSS Variables Only (Static styles moved to .css file)
         const css = `
             :root {
@@ -471,6 +484,7 @@
                 --pf-truncate-text-color: ${truncColor};
                 --pf-sidebar-width: ${sidebarPercent}%;
                 --pf-grid-width: ${gridPercent}%;
+                --pf-subfilter-bg: ${subfilterBg};
             }
         `;
         const styleEl = document.createElement('style');
