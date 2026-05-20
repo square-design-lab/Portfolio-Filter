@@ -668,9 +668,11 @@
         .mock-pagination { margin-top: 40px; display: flex; flex-direction: column; align-items: flex-end; width: 100%; }
         .mock-pag-txt { margin-bottom: 12px; font-size: 12px; color: #666; }
 
-        /* Grid */
+        /* Grid — responsive: 3 cols wide, 2 cols medium, 1 col narrow */
         .mock-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+            gap: 24px;
         }
 
         /* Sticky */
@@ -682,7 +684,7 @@
         .mock-wrapper.sticky-enabled .mock-controls:hover { scrollbar-color: rgba(0,0,0,0.2) transparent; }
 
         /* Mobile Preview Overrides */
-        #previewFrame.mobile .mock-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+        #previewFrame.mobile .mock-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
         #previewFrame.mobile .mock-wrapper.sticky-enabled .mock-controls { position: static !important; }
 
         #previewFrame.mobile .mock-controls-top-row { flex-direction: column; gap: 16px; }
@@ -813,6 +815,8 @@
                 <div class="group-header" onclick="togGroup(this)">Grid Item Meta</div>
                 <div class="group-body">
 
+                    <div class="toggle-row"><label>Show Tags</label><input type="checkbox" id="m_tags"></div>
+
                     <div class="control-row">
                         <label>Meta Layout</label>
                         <select id="metaLayout">
@@ -845,7 +849,6 @@
                         <input type="hidden" id="tagFontSize" value="14">
                     </div>
 
-                    <div class="toggle-row"><label>Show Tags</label><input type="checkbox" id="m_tags"></div>
                     <div class="control-row">
                         <label>Tag Delimiter</label>
                         <div style="display:flex; gap:8px;">
