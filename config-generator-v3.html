@@ -372,32 +372,71 @@
         }
 
         .mobile-tabs { display: none; }
+        .mobile-copy-btn { display: none; }
 
         @media (max-width: 1023px) {
             body { flex-direction: column; overflow: auto; height: auto; }
             .sidebar { width: 100%; height: auto; border-right: none; }
             .main-content { display: none; }
 
+            /* Tab bar */
             .mobile-tabs {
-                display: flex; position: fixed; bottom: 0; left: 0; right: 0;
-                background: #fff; border-top: 1px solid #eee; z-index: 100;
-                height: 50px; padding-bottom: env(safe-area-inset-bottom);
+                display: flex;
+                position: fixed; bottom: 0; left: 0; right: 0;
+                background: #fff;
+                border-top: 1px solid #E5E5E5;
+                z-index: 100;
+                height: 68px;
+                padding: 8px 12px;
+                padding-bottom: calc(8px + env(safe-area-inset-bottom));
+                gap: 6px;
+                align-items: stretch;
             }
-            .tab-btn {
-                flex: 1; border: none; background: none; font-weight: 500;
-                color: var(--text-tertiary); font-size: 12px;
-            }
-            .tab-btn.active { color: var(--accent); border-top: 2px solid var(--accent); }
 
-            body.tab-edit .sidebar { display: flex; padding-bottom: 60px; }
+            /* Each tab button */
+            .tab-btn {
+                flex: 1;
+                border: none;
+                background: transparent;
+                color: var(--text-tertiary);
+                font-size: 11px;
+                font-weight: 500;
+                font-family: inherit;
+                cursor: pointer;
+                border-radius: 10px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                transition: background 0.18s ease, color 0.18s ease;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .tab-btn svg { opacity: 0.5; transition: opacity 0.18s ease; }
+
+            /* Active tab — dark filled pill */
+            .tab-btn.active {
+                background: var(--accent);
+                color: #fff;
+                font-weight: 600;
+            }
+            .tab-btn.active svg { opacity: 1; }
+
+            /* Show Copy Code button inside sidebar header on mobile */
+            .mobile-copy-btn {
+                display: flex;
+            }
+
+            body.tab-edit .sidebar { display: flex; padding-bottom: 80px; }
             body.tab-edit .main-content { display: none; }
 
             body.tab-preview .sidebar { display: none; }
-            body.tab-preview .main-content { display: flex; height: 100vh; padding-bottom: 60px; }
+            body.tab-preview .main-content { display: flex; height: 100vh; padding-bottom: 76px; }
             body.tab-preview .code-drawer { display: none; }
 
             body.tab-code .sidebar { display: none; }
-            body.tab-code .main-content { display: flex; height: 100vh; padding-bottom: 60px; }
+            body.tab-code .main-content { display: flex; height: 100vh; padding-bottom: 76px; }
             body.tab-code .preview-container { display: none; }
         }
 
@@ -707,14 +746,27 @@
 <body class="tab-edit">
 
     <div class="mobile-tabs">
-        <button class="tab-btn active" onclick="setTab('edit')">Settings</button>
-        <button class="tab-btn" onclick="setTab('preview')">Preview</button>
-        <button class="tab-btn" onclick="setTab('code')">Code</button>
+        <button class="tab-btn active" onclick="setTab('edit')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Settings
+        </button>
+        <button class="tab-btn" onclick="setTab('preview')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Preview
+        </button>
+        <button class="tab-btn" onclick="setTab('code')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Code
+        </button>
     </div>
 
     <div class="sidebar">
         <div class="sidebar-header">
             <h2>Config Generator <span class="badge">v3.5</span></h2>
+            <button class="copy-btn mobile-copy-btn" id="mobileCopyBtn" onclick="copyCode()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                Copy Code
+            </button>
         </div>
         <div class="sidebar-content">
 
@@ -1996,7 +2048,13 @@
 
         document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updateAll))
 
-        window.setTab = function(t) { document.body.className = 'tab-' + t }
+        window.setTab = function(t) {
+          document.body.className = 'tab-' + t
+          document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            const isActive = btn.getAttribute('onclick') === "setTab('" + t + "')"
+            btn.classList.toggle('active', isActive)
+          })
+        }
         window.setDev = function(d) {
             document.getElementById('previewFrame').className = d
             document.querySelectorAll('.device-toggle button').forEach(b => b.classList.remove('active'))
@@ -2007,14 +2065,18 @@
         window.togGroup = function(h) { h.parentNode.classList.toggle('open') }
         window.copyCode = function() {
             navigator.clipboard.writeText(document.getElementById('codeOutput').textContent)
-            const btn = document.getElementById('copyBtn')
-            const original = btn.innerHTML
-            btn.innerHTML = `
+            const copiedHTML = `
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 Copied!
             `
-            btn.classList.add('copied')
-            setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied') }, 2000)
+            ;['copyBtn', 'mobileCopyBtn'].forEach(function(id) {
+                const btn = document.getElementById(id)
+                if (!btn) return
+                const original = btn.innerHTML
+                btn.innerHTML = copiedHTML
+                btn.classList.add('copied')
+                setTimeout(function() { btn.innerHTML = original; btn.classList.remove('copied') }, 2000)
+            })
         }
 
         initDesktopStyleSelect()
