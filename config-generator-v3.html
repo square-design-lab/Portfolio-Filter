@@ -375,9 +375,26 @@
         .mobile-copy-btn { display: none; }
 
         @media (max-width: 1023px) {
-            body { flex-direction: column; overflow: auto; height: auto; }
-            .sidebar { width: 100%; height: auto; border-right: none; }
+            body { flex-direction: column; height: 100vh; overflow: hidden; }
             .main-content { display: none; }
+
+            /* Sidebar: fixed panel, full height above the tab bar */
+            .sidebar {
+                position: fixed;
+                top: 0; left: 0; right: 0;
+                bottom: calc(68px + env(safe-area-inset-bottom));
+                width: 100%;
+                border-right: none;
+                display: none;
+                flex-direction: column;
+                z-index: 50;
+            }
+
+            /* Sidebar header is a flex sibling to sidebar-content,
+               so it stays pinned at the top while only sidebar-content scrolls */
+            .sidebar-header {
+                flex-shrink: 0;
+            }
 
             /* Tab bar */
             .mobile-tabs {
@@ -424,19 +441,32 @@
             .tab-btn.active svg { opacity: 1; }
 
             /* Show Copy Code button inside sidebar header on mobile */
-            .mobile-copy-btn {
-                display: flex;
-            }
+            .mobile-copy-btn { display: flex; }
 
-            body.tab-edit .sidebar { display: flex; padding-bottom: 80px; }
+            /* Settings tab */
+            body.tab-edit .sidebar { display: flex; }
             body.tab-edit .main-content { display: none; }
 
+            /* Preview tab */
             body.tab-preview .sidebar { display: none; }
-            body.tab-preview .main-content { display: flex; height: 100vh; padding-bottom: 76px; }
+            body.tab-preview .main-content {
+                display: flex;
+                position: fixed;
+                top: 0; left: 0; right: 0;
+                bottom: calc(68px + env(safe-area-inset-bottom));
+                height: auto;
+            }
             body.tab-preview .code-drawer { display: none; }
 
+            /* Code tab */
             body.tab-code .sidebar { display: none; }
-            body.tab-code .main-content { display: flex; height: 100vh; padding-bottom: 76px; }
+            body.tab-code .main-content {
+                display: flex;
+                position: fixed;
+                top: 0; left: 0; right: 0;
+                bottom: calc(68px + env(safe-area-inset-bottom));
+                height: auto;
+            }
             body.tab-code .preview-container { display: none; }
             body.tab-code .code-drawer { flex: 1; height: auto; }
         }
@@ -996,7 +1026,7 @@
 
                     <div class="toggle-row"><label>Search Bar</label><input type="checkbox" id="searchEnabled"></div>
                     <div class="toggle-row"><label>Sorting</label><input type="checkbox" id="sortEnabled"></div>
-                    <div class="toggle-row"><label>Show Year in Sort</label><input type="checkbox" id="displayYearInSort" checked></div>
+                    <div class="toggle-row"><label>Show Year in Sort</label><input type="checkbox" id="displayYearInSort"></div>
                     <div class="toggle-row"><label>Reset Button</label><input type="checkbox" id="showResetButton"></div>
                     <div class="toggle-row"><label>Multi-Select</label><input type="checkbox" id="allowMultiSelect"></div>
                     <div class="toggle-row"><label>Show Item Counts</label><input type="checkbox" id="showItemCounts"></div>
@@ -1034,7 +1064,7 @@
                     </div>
                     <div class="control-row"><label>Items Per Page</label><input type="number" id="itemsPerPage" value="8"></div>
                     <div class="control-row"><label>Load Button Text</label><input type="text" id="loadMoreLabel" value="Load More Projects"></div>
-                    <div class="toggle-row"><label>Show Progress Text</label><input type="checkbox" id="showProgress" checked></div>
+                    <div class="toggle-row"><label>Show Progress Text</label><input type="checkbox" id="showProgress"></div>
                 </div>
             </div>
 

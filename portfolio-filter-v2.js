@@ -17,7 +17,7 @@
         allowMultiSelect: false,
         showItemCounts: false,
         showResetButton: false,
-        displayYearInSort: true,
+        displayYearInSort: false,
         defaultSortOrder: 'original',
         hideSingleValueFilters: false,
         showFilterLabel: true,
@@ -30,7 +30,7 @@
             type: 'none',
             itemsPerPage: 12,
             loadMoreLabel: 'Load More',
-            showProgress: true
+            showProgress: false
         },
 
         styles: {
