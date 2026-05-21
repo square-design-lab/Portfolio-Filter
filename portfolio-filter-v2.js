@@ -1767,6 +1767,7 @@
         document.querySelectorAll('.child-chk-all').forEach(c => c.checked = false);
         document.querySelectorAll('.group-all-chk').forEach(c => c.checked = false);
         document.querySelectorAll('.filter-item-wrapper').forEach(w => w.classList.remove('active'));
+        document.querySelectorAll('.filter-dropdown-header, .filter-group-header').forEach(h => h.classList.remove('active'));
 
         Object.keys(state.activeFilters).forEach(group => {
             const groupEl = document.querySelector(`.filter-group-container[data-group="${group}"]`);
@@ -1822,7 +1823,12 @@
         document.querySelectorAll('.filter-group-container').forEach(groupEl => {
             const group = groupEl.dataset.group;
             const values = Array.isArray(state.activeFilters[group]) ? state.activeFilters[group].filter(v => v !== ALL_OPTION_VALUE) : [];
-            if (values.length > 0) return;
+            if (values.length > 0) {
+                // Mark group header as active when filters are applied in that group
+                const headerEl = groupEl.querySelector('.filter-dropdown-header, .filter-group-header');
+                if (headerEl) headerEl.classList.add('active');
+                return;
+            }
             const allBtn = groupEl.querySelector('.filter-option-all.filter-option-btn');
             if (allBtn) allBtn.classList.add('active');
             const allChk = groupEl.querySelector('.group-all-chk');
@@ -1919,7 +1925,17 @@
             const parentCol = document.querySelector('.portfolio-content-col') || gridWrapper.parentNode;
             parentCol.appendChild(emptyEl);
         }
-        emptyEl.textContent = NO_RESULTS_TEXT;
+        emptyEl.innerHTML = '';
+        const noResultsMsg = document.createElement('p');
+        noResultsMsg.textContent = NO_RESULTS_TEXT;
+        emptyEl.appendChild(noResultsMsg);
+        if (CONFIG.showResetButton) {
+            const noResultsReset = document.createElement('button');
+            noResultsReset.className = 'reset-btn';
+            noResultsReset.textContent = TEXT.resetText;
+            noResultsReset.addEventListener('click', resetAll);
+            emptyEl.appendChild(noResultsReset);
+        }
         emptyEl.style.display = filtered.length === 0 ? 'block' : 'none';
 
         updatePaginationControls(filtered.length, show.length);

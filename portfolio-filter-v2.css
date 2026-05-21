@@ -75,6 +75,7 @@
 .portfolio-main-wrapper.layout-top .portfolio-control-panel {
     width: 100%;
     margin-bottom: 30px;
+    z-index: 9;
 }
 
 .portfolio-main-wrapper.layout-top .portfolio-content-col {
@@ -1146,7 +1147,8 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     flex: 0 0 auto;
 }
 
-.portfolio-control-panel.pf-checkbox-dropdown .pf-caret {
+/* Higher specificity needed to override the layout-checkbox display:none rule */
+.portfolio-control-panel.layout-checkbox.pf-checkbox-dropdown .pf-caret {
     display: inline-block;
 }
 
@@ -1183,7 +1185,7 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1024px) {
     .portfolio-control-panel.pf-topbar .pf-topbar-row {
         flex-direction: column;
         align-items: stretch;
