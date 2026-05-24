@@ -738,6 +738,11 @@
         .mock-pagination { margin-top: 40px; display: flex; flex-direction: column; align-items: flex-end; width: 100%; }
         .mock-pag-txt { margin-bottom: 12px; font-size: 12px; color: #666; }
 
+        /* Topbar inline: one filter group per full row (mirrors real plugin behaviour) */
+        .mock-controls-left.inline-layout .mock-filter-group {
+            width: 100%;
+        }
+
         /* Grid — responsive: 3 cols wide, 2 cols medium, 1 col narrow */
         .mock-grid {
             display: grid;
@@ -1611,7 +1616,7 @@
               topRow.className = 'mock-controls-top-row'
 
               const leftCol = document.createElement('div')
-              leftCol.className = 'mock-controls-left'
+              leftCol.className = 'mock-controls-left' + (config.filterLayout === 'inline' ? ' inline-layout' : '')
 
               const rightCol = document.createElement('div')
               rightCol.className = 'mock-controls-right'

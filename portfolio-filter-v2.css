@@ -40,7 +40,7 @@
     box-sizing: border-box;
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1024px) {
 
     .page-section .content:has(.portfolio-main-wrapper),
     .page-section .content.portfolio-section-has-main-wrapper {
@@ -134,7 +134,7 @@ body.pf-ready #gridThumbs {
 }
 
 /* Mobile: Stack everything */
-@media (max-width: 1023px) {
+@media (max-width: 1024px) {
     .portfolio-main-wrapper.layout-sidebar {
         flex-direction: column;
     }
@@ -798,6 +798,10 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     margin-bottom: 0;
 }
 
+.portfolio-main-wrapper.layout-sidebar .filter-group-container {
+    width: 100%;
+}
+
 .filter-options {
     gap: var(--pf-gap);
     justify-content: var(--pf-align);
@@ -859,7 +863,7 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
 }
 
 /* Mobile: revert subcategory bar to normal in-flow layout */
-@media (max-width: 1023px) {
+@media (max-width: 1024px) {
     .portfolio-control-panel.pf-topbar.layout-inline .filter-options.children {
         position: static;
         flex-direction: column;
@@ -924,7 +928,7 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     transform: rotate(180deg);
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1024px) {
     .portfolio-control-panel:not(.mobile-style-checkbox) .filter-options {
         flex-wrap: var(--pf-mobile-wrap);
         overflow-x: var(--pf-mobile-overflow);
@@ -1129,7 +1133,7 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     margin-bottom: 0;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1025px) {
     .portfolio-control-panel.pf-topbar .pf-topbar-right .search-group input,
     .portfolio-control-panel.pf-topbar .pf-topbar-right .sort-group select {
         width: 220px;
@@ -1140,6 +1144,13 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
 /* Topbar dropdown groups */
 .portfolio-main-wrapper.layout-top .portfolio-control-panel.layout-dropdown .filter-group-container {
     flex: 0 0 auto;
+}
+
+/* Topbar inline: one filter group occupies a full row for clarity.
+   Inline buttons expand horizontally; mixing groups on the same row
+   makes it impossible to tell where one group ends and another begins. */
+.portfolio-control-panel.pf-topbar.layout-inline .filter-group-container {
+    width: 100%;
 }
 
 /* Topbar checkbox dropdown */
@@ -1170,7 +1181,7 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     max-height: 280px;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1025px) {
     .portfolio-control-panel.pf-topbar.layout-dropdown .filter-group-container,
     .portfolio-control-panel.pf-topbar.pf-checkbox-dropdown .filter-group-container {
         position: relative;
