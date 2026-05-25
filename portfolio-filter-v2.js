@@ -1393,6 +1393,10 @@
             const allItemWrapper = document.createElement('div');
             allItemWrapper.className = 'filter-item-wrapper filter-item-all';
             allItemWrapper.dataset.group = groupName;
+            // Primary group (first rendered) uses the configured allText.
+            // Secondary groups always use plain "All" so "All Projects" doesn't
+            // appear under Year, Location, etc.
+            const groupAllLabel = contentIndex === 0 ? TEXT.allText : 'All';
             if (useCheckboxLayout) {
                 const allLabel = document.createElement('label');
                 allLabel.className = 'filter-label-checkbox filter-option-all';
@@ -1403,13 +1407,13 @@
                 allChk.dataset.value = ALL_OPTION_VALUE;
                 allChk.addEventListener('change', () => handleGroupAllClick(groupName));
                 allLabel.appendChild(allChk);
-                allLabel.appendChild(document.createTextNode(TEXT.allText));
+                allLabel.appendChild(document.createTextNode(groupAllLabel));
                 allItemWrapper.appendChild(allLabel);
             } else {
                 const allBtn = document.createElement('button');
                 allBtn.type = 'button';
                 allBtn.className = 'filter-option-btn filter-option-all';
-                allBtn.textContent = TEXT.allText;
+                allBtn.textContent = groupAllLabel;
                 allBtn.dataset.group = groupName;
                 allBtn.dataset.value = ALL_OPTION_VALUE;
                 allBtn.addEventListener('click', (e) => {

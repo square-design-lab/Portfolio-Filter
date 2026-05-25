@@ -1394,8 +1394,10 @@
             container.appendChild(toggle)
           }
 
-          /* "All" Button Logic */
-          const allBtn = createFilterControl(config.textLabels.allText, key, true)
+          /* "All" Button Logic — primary group uses configured allText,
+             secondary groups always show plain "All" */
+          const groupAllText = orderIndex === 0 ? config.textLabels.allText : 'All'
+          const allBtn = createFilterControl(groupAllText, key, true)
 
           if (isDropdown) {
             const head = document.createElement('div')
