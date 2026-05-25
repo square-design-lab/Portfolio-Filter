@@ -411,6 +411,12 @@ body.pf-ready #gridThumbs {
     font-size: 14px;
 }
 
+/* Reset button always shown inside empty-state — centred and separated */
+.pf-no-results-reset {
+    display: block;
+    margin: 12px auto 0;
+}
+
 /* Meta Data Injection */
 .portfolio-item-tags,
 .portfolio-item-year,
@@ -1170,15 +1176,27 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
 }
 
 .portfolio-control-panel.pf-checkbox-dropdown .filter-dropdown-content {
-    min-width: 220px;
-    overflow-y: auto;
+    /* max-width instead of min-width: constrains without forcing unnecessary width */
+    max-width: 300px;
+    /* overflow stays hidden during the open animation to prevent scrollbar flash;
+       overflow-y: auto is applied on the open state only, below */
     flex-direction: column;
     align-items: flex-start;
     flex-wrap: nowrap;
 }
 
+/* Prevent long labels from wrapping inside the checkbox dropdown */
+.portfolio-control-panel.pf-checkbox-dropdown .filter-label-checkbox {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
 .portfolio-control-panel.pf-checkbox-dropdown .filter-group-container.open .filter-dropdown-content {
     max-height: 280px;
+    /* Only enable scroll when open — avoids flash during the open animation */
+    overflow-y: auto;
 }
 
 @media (min-width: 1025px) {
@@ -1236,5 +1254,53 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
 
     .portfolio-main-wrapper.layout-top .portfolio-control-panel.layout-dropdown.pf-groups-3plus .filter-group-container {
         flex: 1 1 100%;
+    }
+}
+
+/* ─── SIDEBAR: FILTER DIRECTION ───────────────────────────────────────────── */
+
+/* Vertical (default): each option on its own row */
+.portfolio-main-wrapper.layout-sidebar .portfolio-control-panel.filter-dir-vertical .filter-options {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Horizontal: options wrap across the row */
+.portfolio-main-wrapper.layout-sidebar .portfolio-control-panel.filter-dir-horizontal .filter-options {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+/* Subcategories are always vertical in sidebar regardless of direction setting */
+.portfolio-main-wrapper.layout-sidebar .filter-options.children {
+    flex-direction: column !important;
+    align-items: flex-start;
+}
+
+/* ─── SIDEBAR: SCROLLABLE WHEN TALLER THAN VIEWPORT (desktop) ─────────────── */
+@media (min-width: 1025px) {
+    .portfolio-main-wrapper.layout-sidebar .portfolio-control-panel {
+        max-height: 100vh;
+        overflow-y: auto;
+        /* Scrollbar hidden by default, appears on hover */
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+    }
+    .portfolio-main-wrapper.layout-sidebar .portfolio-control-panel:hover {
+        scrollbar-color: rgba(0,0,0,0.2) transparent;
+    }
+    .portfolio-main-wrapper.layout-sidebar .portfolio-control-panel::-webkit-scrollbar { width: 4px; }
+    .portfolio-main-wrapper.layout-sidebar .portfolio-control-panel::-webkit-scrollbar-track { background: transparent; }
+    .portfolio-main-wrapper.layout-sidebar .portfolio-control-panel::-webkit-scrollbar-thumb { background-color: transparent; border-radius: 20px; }
+    .portfolio-main-wrapper.layout-sidebar .portfolio-control-panel:hover::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); }
+}
+
+/* ─── SIDEBAR STICKY: DISABLE ON MOBILE ───────────────────────────────────── */
+@media (max-width: 1024px) {
+    .pf-sticky-enabled.layout-sidebar .portfolio-control-panel,
+    .pf-sticky-enabled.layout-sidebar .portfolio-control-panel.pf-sticky {
+        position: static;
+        max-height: none;
+        overflow-y: visible;
     }
 }

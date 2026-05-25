@@ -75,6 +75,8 @@
         sidebarWidthPercent: 30,
         gridWidthPercent: 70,
 
+        filterDirection: 'vertical', // 'vertical' | 'horizontal' — sidebar only
+
         allText: 'All',
         resetText: 'Reset All',
         searchPlaceholder: 'Search projects...',
@@ -1155,6 +1157,10 @@
         if (useCheckboxDropdown) {
             container.classList.add('pf-checkbox-dropdown');
         }
+        if (isSidebarLayout) {
+            const dir = (CONFIG.filterDirection === 'horizontal') ? 'horizontal' : 'vertical';
+            container.classList.add(`filter-dir-${dir}`);
+        }
         const applyTruncation = (listEl) => {
             if (!CONFIG.truncateFilters) return;
             const optionItems = Array.from(listEl.children).filter(node => node.classList.contains('filter-item-wrapper') && !node.classList.contains('filter-item-all'));
@@ -1869,11 +1875,8 @@
         applyInitialOrderIfNeeded();
         const gridItems = Array.from(gridWrapper.querySelectorAll('.grid-item'));
 
-        if (!isLoadMore && allowScrollToGrid) {
-            const mainWrapper = document.querySelector('.portfolio-main-wrapper');
-            if (mainWrapper) mainWrapper.scrollIntoView({ behavior: 'smooth' });
-            else gridWrapper.scrollIntoView({ behavior: 'smooth' });
-        }
+        // Intentionally not scrolling on filter change — it disorients users
+        // who are already positioned at the filter controls above the grid.
 
         const filtered = gridItems.filter(item => checkRule(item));
         state.filteredItems = filtered;
@@ -1933,13 +1936,12 @@
         const noResultsMsg = document.createElement('p');
         noResultsMsg.textContent = NO_RESULTS_TEXT;
         emptyEl.appendChild(noResultsMsg);
-        if (CONFIG.showResetButton) {
-            const noResultsReset = document.createElement('button');
-            noResultsReset.className = 'reset-btn';
-            noResultsReset.textContent = TEXT.resetText;
-            noResultsReset.addEventListener('click', resetAll);
-            emptyEl.appendChild(noResultsReset);
-        }
+        // Always show a reset button in the empty state so users can escape
+        const noResultsReset = document.createElement('button');
+        noResultsReset.className = 'reset-btn pf-no-results-reset';
+        noResultsReset.textContent = TEXT.resetText;
+        noResultsReset.addEventListener('click', resetAll);
+        emptyEl.appendChild(noResultsReset);
         emptyEl.style.display = filtered.length === 0 ? 'block' : 'none';
 
         updatePaginationControls(filtered.length, show.length);

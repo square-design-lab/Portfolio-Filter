@@ -743,6 +743,22 @@
             width: 100%;
         }
 
+        /* Sidebar filter direction */
+        .mock-controls.filter-dir-vertical .mock-options {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .mock-controls.filter-dir-horizontal .mock-options {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        /* Subcategories always vertical */
+        .mock-controls.filter-dir-vertical .mock-sub-options,
+        .mock-controls.filter-dir-horizontal .mock-sub-options {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
         /* Grid — responsive: 3 cols wide, 2 cols medium, 1 col narrow */
         .mock-grid {
             display: grid;
@@ -848,6 +864,14 @@
                     <div class="control-row" id="gridWidthRow" style="display:none;">
                         <label>Grid Width (%)</label>
                         <input type="number" id="gridWidthPercent" value="70" min="10" max="90">
+                    </div>
+                    <div class="control-row" id="filterDirectionRow" style="display:none;">
+                        <label>Filter Options Layout</label>
+                        <select id="filterDirection">
+                            <option value="vertical" selected>Vertical (one per row)</option>
+                            <option value="horizontal">Horizontal (wrap)</option>
+                        </select>
+                        <div class="helper-text">How filter options are displayed in the sidebar.</div>
                     </div>
                 </div>
             </div>
@@ -1672,6 +1696,9 @@
 
           } else {
               // Sidebar Layout (Standard Column)
+              const filterDir = config.layout === 'sidebar' ? (config.filterDirection || 'vertical') : null
+              if (filterDir) controls.classList.add(`filter-dir-${filterDir}`)
+
               if (config.searchEnabled) {
                 const s = document.createElement('input')
                 s.id = 'mockSearchInput'
@@ -1826,7 +1853,16 @@
           if (!shown.length) {
             const empty = document.createElement('div')
             empty.className = 'mock-empty'
-            empty.textContent = config.noResultsText || 'No results found.'
+            const emptyMsg = document.createElement('p')
+            emptyMsg.style.margin = '0 0 12px'
+            emptyMsg.textContent = config.noResultsText || 'No results found.'
+            empty.appendChild(emptyMsg)
+            const emptyReset = document.createElement('button')
+            emptyReset.className = 'mock-load-btn'
+            emptyReset.style.cssText = 'display:block; margin:0 auto; background:none; border:none; text-decoration:underline; cursor:pointer; font-size:12px; color:#888; padding:0;'
+            emptyReset.textContent = config.textLabels?.resetText || 'Reset All'
+            emptyReset.onclick = () => { resetFilters(); renderMock() }
+            empty.appendChild(emptyReset)
             contentCol.appendChild(empty)
           }
 
@@ -1895,6 +1931,7 @@
             if (document.getElementById('stickySpacingRow')) document.getElementById('stickySpacingRow').style.display = (isSidebar && document.getElementById('stickySidebar').checked) ? 'block' : 'none'
             if (document.getElementById('sidebarWidthRow')) document.getElementById('sidebarWidthRow').style.display = isSidebar ? 'flex' : 'none'
             if (document.getElementById('gridWidthRow')) document.getElementById('gridWidthRow').style.display = isSidebar ? 'flex' : 'none'
+            if (document.getElementById('filterDirectionRow')) document.getElementById('filterDirectionRow').style.display = isSidebar ? 'block' : 'none'
 
             // Truncate Logic
             if (document.getElementById('truncateSettings')) document.getElementById('truncateSettings').style.display = document.getElementById('truncateFilters').checked ? 'block' : 'none'
@@ -1924,6 +1961,7 @@
               desktopInlineVariant: inlineVariantValue,
               noResultsText: document.getElementById('noResultsText').value,
               randomOrder: document.getElementById('randomOrder').checked,
+              filterDirection: document.getElementById('filterDirection')?.value || 'vertical',
               stickySidebar: document.getElementById('stickySidebar').checked,
               stickyTopSpacing: safeInt('stickyTopSpacing', 20),
               truncateFilters: document.getElementById('truncateFilters').checked,
@@ -2033,6 +2071,7 @@
             desktopInlineVariant: config.desktopInlineVariant,
             noResultsText: config.noResultsText,
             randomOrder: config.randomOrder,
+            filterDirection: config.filterDirection,
             stickySidebar: config.stickySidebar,
             stickyTopSpacing: config.stickyTopSpacing,
             truncateFilters: config.truncateFilters,
