@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Config UI Design Guide — Squarespace Plugins</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --accent: #4F46E5;
+            --accent-hover: #4338CA;
+            --text-main: #1C1C1E;
+            --text-secondary: #666666;
+            --text-tertiary: #999999;
+            --border-light: #E5E5E5;
+            --bg-body: #F5F5F7;
+            --bg-sidebar: #FFFFFF;
+            --sidebar-width: 380px;
+            --header-height: 60px;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 60px 80px;
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+            max-width: 1100px;
+        }
+
+        /* --- PAGE HEADER --- */
+        .page-header {
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 32px;
+            margin-bottom: 48px;
+        }
+        .page-header .badge {
+            display: inline-block;
+            background: #EEF2FF;
+            color: var(--accent);
+            border: 1px solid #C7D2FE;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            margin-bottom: 12px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin: 0 0 8px;
+        }
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* --- SECTION --- */
+        .section {
+            margin-bottom: 64px;
+        }
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-tertiary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin: 0 0 6px;
+        }
+        h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0 0 8px;
+        }
+        p { margin: 0 0 16px; line-height: 1.65; color: var(--text-secondary); }
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            background: #F0F0F2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent);
+        }
+
+        /* --- SWATCHES --- */
+        .swatch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .swatch {
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+            background: #fff;
+        }
+        .swatch-color {
+            height: 80px;
+        }
+        .swatch-info {
+            padding: 12px;
+        }
+        .swatch-name { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+        .swatch-var { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-tertiary); margin-bottom: 2px; }
+        .swatch-hex { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-secondary); }
+
+        /* --- TYPE SCALE --- */
+        .type-sample {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: baseline;
+            gap: 24px;
+        }
+        .type-preview { min-width: 280px; }
+        .type-spec { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-tertiary); white-space: nowrap; }
+
+        /* --- SPACING --- */
+        .spacing-grid { display: flex; flex-direction: column; gap: 10px; }
+        .spacing-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+        }
+        .spacing-bar { background: #EEF2FF; height: 12px; border-radius: 3px; flex-shrink: 0; }
+        .spacing-label { font-weight: 600; font-size: 13px; min-width: 80px; }
+        .spacing-spec { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-tertiary); }
+
+        /* --- COMPONENT DEMOS --- */
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .demo-card {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+        .demo-card-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-tertiary);
+            margin-bottom: 16px;
+        }
+
+        /* Actual component reproductions */
+        .demo-input {
+            width: 100%;
+            height: 36px;
+            padding: 0 10px;
+            font-family: inherit;
+            font-size: 13px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            background: #fff;
+            color: var(--text-main);
+            transition: all 0.15s;
+            appearance: none;
+            outline: none;
+        }
+        .demo-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+
+        .demo-select {
+            width: 100%;
+            height: 36px;
+            padding: 0 30px 0 10px;
+            font-family: inherit;
+            font-size: 13px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            background: #fff url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 8px center / 14px;
+            color: var(--text-main);
+            appearance: none;
+            outline: none;
+        }
+
+        .demo-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .demo-toggle-label { font-size: 13px; color: var(--text-secondary); font-weight: 400; }
+
+        .demo-toggle {
+            appearance: none;
+            width: 36px; height: 20px;
+            background: #E5E5E5;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .demo-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px; left: 2px;
+            width: 16px; height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+        }
+        .demo-toggle.on { background: var(--accent); }
+        .demo-toggle.on::after { transform: translateX(16px); }
+
+        .demo-btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 9px 20px;
+            border-radius: 7px;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: -0.01em;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            box-shadow: 0 1px 3px rgba(79,70,229,0.3);
+            font-family: inherit;
+        }
+        .demo-btn-primary:hover { background: var(--accent-hover); }
+
+        .demo-btn-ghost {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-light);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .demo-accordion-header {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 16px;
+        }
+
+        .demo-badge {
+            font-size: 10px;
+            background: #EEF2FF;
+            padding: 2px 7px;
+            border-radius: 4px;
+            color: var(--accent);
+            font-weight: 600;
+            border: 1px solid #C7D2FE;
+        }
+
+        .demo-color-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #FAFAFA;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+        }
+        .demo-color-chip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .demo-color-dot {
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .demo-brand-icon {
+            width: 30px; height: 30px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Code block */
+        .code-block {
+            background: #0D0D0D;
+            color: #A9B7C6;
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            overflow-x: auto;
+            margin: 0;
+        }
+        .code-block .hl-key   { color: #E5BF78; }
+        .code-block .hl-str   { color: #87C98F; }
+        .code-block .hl-bool  { color: #79B8FF; }
+        .code-block .hl-num   { color: #FF9D7C; }
+        .code-block .hl-cmt   { color: #5C6370; font-style: italic; }
+        .code-block .hl-kw    { color: #C678DD; }
+
+        /* Layout diagram */
+        .layout-diagram {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            font-size: 12px;
+        }
+        .ld-shell {
+            display: flex;
+            height: 300px;
+            border: 2px dashed var(--border-light);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        .ld-sidebar {
+            width: 380px;
+            background: #fff;
+            border-right: 2px dashed var(--border-light);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .ld-sidebar-header {
+            height: 60px;
+            background: #F8F8FF;
+            border-bottom: 2px dashed var(--border-light);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .ld-sidebar-body {
+            flex: 1;
+            background: repeating-linear-gradient(0deg, #F5F5F7 0, #F5F5F7 1px, #fff 1px, #fff 28px);
+            padding: 12px;
+        }
+        .ld-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .ld-topbar {
+            height: 60px;
+            background: #F8F8FF;
+            border-bottom: 2px dashed var(--border-light);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            font-weight: 600;
+            font-size: 12px;
+            justify-content: space-between;
+        }
+        .ld-preview { flex: 1; background: var(--bg-body); }
+        .ld-codedrawer {
+            height: 60px;
+            background: #1A1A1A;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            color: #888;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+        }
+        .ld-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-tertiary);
+            font-weight: 600;
+        }
+        .ld-dim {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--accent);
+        }
+
+        /* Rules list */
+        .rules-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .rules-list li {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-light);
+            line-height: 1.5;
+        }
+        .rules-list li:last-child { border-bottom: none; }
+        .rules-list .rule-icon {
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: #EEF2FF;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .rules-list .rule-text { font-size: 13px; color: var(--text-secondary); }
+        .rules-list .rule-text strong { color: var(--text-main); }
+
+        /* Checklist */
+        .checklist {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 13px;
+        }
+        .checklist-item:last-child { border-bottom: none; }
+        .checklist-icon {
+            width: 18px; height: 18px;
+            border-radius: 4px;
+            background: #DCFCE7;
+            color: #059669;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } body { padding: 24px 20px; } }
+
+        hr.divider { border: none; border-top: 1px solid var(--border-light); margin: 48px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <div class="badge">Design System</div>
+        <h1>Config UI Design Guide</h1>
+        <p>The visual language for all Squarespace plugin configuration dashboards.<br>
+        Apply these rules to every new plugin to maintain a consistent, professional experience.</p>
+    </div>
+
+    <!-- ===== LAYOUT STRUCTURE ===== -->
+    <div class="section">
+        <div class="section-title">01 — Layout Structure</div>
+        <h2 style="margin-bottom:6px;">Three-panel shell</h2>
+        <p>Every plugin config UI uses the same two-zone shell: a fixed sidebar on the left for settings, and a main content area on the right split into preview + code drawer.</p>
+
+        <div class="layout-diagram" style="margin-top:20px;">
+            <div class="ld-shell">
+                <div class="ld-sidebar">
+                    <div class="ld-sidebar-header">
+                        <span class="ld-label">Sidebar</span>
+                        <span class="ld-dim">380px wide</span>
+                    </div>
+                    <div class="ld-sidebar-body"></div>
+                </div>
+                <div class="ld-main">
+                    <div class="ld-topbar">
+                        <span class="ld-label">Topbar (device toggle)</span>
+                        <span class="ld-label">Copy Code CTA</span>
+                    </div>
+                    <div class="ld-preview" style="display:flex;align-items:center;justify-content:center;">
+                        <span class="ld-label">Preview Canvas (dotted bg)</span>
+                    </div>
+                    <div class="ld-codedrawer">Code Drawer — 250px height</div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:20px; text-align:center;">
+                <div>
+                    <div class="ld-label">Sidebar</div>
+                    <div style="font-size:13px; margin-top:4px; font-weight:600;">380px fixed</div>
+                    <div style="font-size:12px; color:var(--text-secondary);">White background, scrollable content</div>
+                </div>
+                <div>
+                    <div class="ld-label">Header / Topbar</div>
+                    <div style="font-size:13px; margin-top:4px; font-weight:600;">60px tall</div>
+                    <div style="font-size:12px; color:var(--text-secondary);">Both sidebar header and main topbar</div>
+                </div>
+                <div>
+                    <div class="ld-label">Code Drawer</div>
+                    <div style="font-size:13px; margin-top:4px; font-weight:600;">250px height</div>
+                    <div style="font-size:12px; color:var(--text-secondary);">Dark bg <code>#0D0D0D</code>, always visible</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:24px;">
+            <ul class="rules-list">
+                <li><div class="rule-icon">1</div><div class="rule-text"><strong>Sidebar width is 380px</strong> — never narrower. This gives labels and controls enough room to breathe.</div></li>
+                <li><div class="rule-icon">2</div><div class="rule-text"><strong>Header height is 60px</strong> — both the sidebar header and the main topbar. Keeps alignment on the same baseline.</div></li>
+                <li><div class="rule-icon">3</div><div class="rule-text"><strong>Preview canvas</strong> uses a <code>radial-gradient(#E1E1E1 1px, transparent 1px)</code> dotted pattern at 20×20px — Figma-like signal that this is a canvas.</div></li>
+                <li><div class="rule-icon">4</div><div class="rule-text"><strong>On mobile (&lt;1024px)</strong>: sidebar becomes full-screen, main panel becomes full-screen, switching via bottom tab bar (68px tall with safe-area padding).</div></li>
+            </ul>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===== COLOR SYSTEM ===== -->
+    <div class="section">
+        <div class="section-title">02 — Color System</div>
+        <h2 style="margin-bottom:6px;">Palette</h2>
+        <p>All colors are defined as CSS custom properties on <code>:root</code>. Never hardcode hex values outside of this block.</p>
+
+        <div class="swatch-grid" style="margin-top:20px;">
+            <div class="swatch">
+                <div class="swatch-color" style="background:#4F46E5;"></div>
+                <div class="swatch-info">
+                    <div class="swatch-name">Accent (Primary)</div>
+                    <div class="swatch-var">--accent</div>
+                    <div class="swatch-hex">#4F46E5 — Indigo-600</div>
+                </div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#4338CA;"></div>
+                <div class="swatch-info">
+                    <div class="swatch-name">Accent Hover</div>
+                    <div class="swatch-var">--accent-hover</div>
+                    <div class="swatch-hex">#4338CA — Indigo-700</div>
+                </div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#1C1C1E;"></div>
+                <div class="swatch-info">
+                    <div class="swatch-name">Text Main</div>
+                    <div class="swatch-var">--text-main</div>
+                    <div class="swatch-hex">#1C1C1E</div>
+                </div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#666666;"></div>
+                <div class="swatch-info">
+                    <div class="swatch-name">Text Secondary</div>
+                    <div class="swatch-var">--text-secondary</div>
+                    <div class="swatch-hex">#666666</div>
+                </div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#999999;"></div>
+                <div class="swatch-info">
+                    <div class="swatch-name">Text Tertiary</div>
+                    <div class="swatch-var">--text-tertiary</div>
+                    <div class="swatch-hex">#999999 — labels, hints</div>
+                </div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#F5F5F7; border-bottom:1px solid #E5E5E5;"></div>
+                <div class="swatch-info">
+                    <div class="swatch-name">Body Background</div>
+                    <div class="swatch-var">--bg-body</div>
+                    <div class="swatch-hex">#F5F5F7 — Apple light gray</div>
+                </div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#FFFFFF; border-bottom:1px solid #E5E5E5;"></div>
+                <div class="swatch-info">
+                    <div class="swatch-name">Sidebar Background</div>
+                    <div class="swatch-var">--bg-sidebar</div>
+                    <div class="swatch-hex">#FFFFFF</div>
+                </div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#E5E5E5;"></div>
+                <div class="swatch-info">
+                    <div class="swatch-name">Border Light</div>
+                    <div class="swatch-var">--border-light</div>
+                    <div class="swatch-hex">#E5E5E5 — dividers, inputs</div>
+                </div>
+            </div>
+            <div class="swatch">
+                <div class="swatch-color" style="background:#10B981;"></div>
+                <div class="swatch-info">
+                    <div class="swatch-name">Success / Copied</div>
+                    <div class="swatch-var">— (hardcoded)</div>
+                    <div class="swatch-hex">#10B981 — Emerald-500</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:28px;">
+            <h3>Accent tints (for badges, focus rings)</h3>
+            <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
+                <div style="background:#EEF2FF; border:1px solid #C7D2FE; padding:10px 16px; border-radius:6px; font-size:13px;">
+                    <strong>#EEF2FF</strong> — badge background
+                </div>
+                <div style="background:#C7D2FE; border:1px solid #A5B4FC; padding:10px 16px; border-radius:6px; font-size:13px;">
+                    <strong>#C7D2FE</strong> — badge border
+                </div>
+                <div style="background:rgba(79,70,229,0.1); border:1px solid rgba(79,70,229,0.2); padding:10px 16px; border-radius:6px; font-size:13px;">
+                    <strong>rgba(79,70,229,0.1)</strong> — focus ring
+                </div>
+                <div style="background:rgba(79,70,229,0.3); border:1px solid rgba(79,70,229,0.4); color:#fff; padding:10px 16px; border-radius:6px; font-size:13px;">
+                    <strong>rgba(79,70,229,0.3)</strong> — button shadow
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===== TYPOGRAPHY ===== -->
+    <div class="section">
+        <div class="section-title">03 — Typography</div>
+        <h2 style="margin-bottom:6px;">Type Scale</h2>
+        <p>Two typefaces: <strong>Inter</strong> for UI, <strong>JetBrains Mono</strong> for code output only.</p>
+
+        <div style="margin-top:20px;">
+            <div class="type-sample">
+                <div class="type-preview" style="font-size:15px; font-weight:700; letter-spacing:-0.02em;">Portfolio Filter</div>
+                <div class="type-spec">15px / 700 / -0.02em — Product name (sidebar header)</div>
+            </div>
+            <div class="type-sample">
+                <div class="type-preview" style="font-size:14px; font-weight:600;">Section heading</div>
+                <div class="type-spec">14px / 600 — Page-level headings</div>
+            </div>
+            <div class="type-sample">
+                <div class="type-preview" style="font-size:13px; font-weight:500;">Control label</div>
+                <div class="type-spec">13px / 500 — Form labels (block labels above inputs)</div>
+            </div>
+            <div class="type-sample">
+                <div class="type-preview" style="font-size:13px; font-weight:400; color:#666;">Toggle label</div>
+                <div class="type-spec">13px / 400 / #666 — Toggle row labels</div>
+            </div>
+            <div class="type-sample">
+                <div class="type-preview" style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.07em; color:#999;">SECTION HEADER</div>
+                <div class="type-spec">12px / 600 / uppercase / 0.07em — Accordion group headers</div>
+            </div>
+            <div class="type-sample">
+                <div class="type-preview" style="font-size:11px; color:#666; line-height:1.4;">Space from top of screen.</div>
+                <div class="type-spec">11px / 400 / #666 — Helper text below controls</div>
+            </div>
+            <div class="type-sample">
+                <div class="type-preview" style="font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.6; color:#A9B7C6; background:#0D0D0D; padding:8px 12px; border-radius:6px;">window.PORTFOLIO_CONFIG = {"{}"}</div>
+                <div class="type-spec">JetBrains Mono 12px — code drawer only</div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===== SPACING ===== -->
+    <div class="section">
+        <div class="section-title">04 — Spacing</div>
+        <h2 style="margin-bottom:6px;">Spacing Scale</h2>
+        <p>All spacing uses multiples of 4px. The most common values:</p>
+
+        <div class="spacing-grid" style="margin-top:20px;">
+            <div class="spacing-row"><div class="spacing-bar" style="width:6px;"></div><div class="spacing-label">6px</div><div class="spacing-spec">--  gap between color chips, small gaps</div></div>
+            <div class="spacing-row"><div class="spacing-bar" style="width:8px;"></div><div class="spacing-label">8px</div><div class="spacing-spec">--  icon-to-text gap, copy button padding vertical, toggle margin-bottom</div></div>
+            <div class="spacing-row"><div class="spacing-bar" style="width:12px;"></div><div class="spacing-label">12px</div><div class="spacing-spec">--  section header margin-bottom, toggle row margin-bottom</div></div>
+            <div class="spacing-row"><div class="spacing-bar" style="width:16px;"></div><div class="spacing-label">16px</div><div class="spacing-spec">--  control-row margin-bottom, sidebar section padding side</div></div>
+            <div class="spacing-row"><div class="spacing-bar" style="width:24px;"></div><div class="spacing-label">24px</div><div class="spacing-spec">--  sidebar padding (all sides), group margin-bottom, code drawer padding</div></div>
+            <div class="spacing-row"><div class="spacing-bar" style="width:40px;"></div><div class="spacing-label">40px</div><div class="spacing-spec">--  preview-container padding</div></div>
+            <div class="spacing-row"><div class="spacing-bar" style="width:48px;"></div><div class="spacing-label">48px</div><div class="spacing-spec">--  preview frame internal padding</div></div>
+        </div>
+
+        <div style="margin-top:24px;">
+            <h3>Border Radius</h3>
+            <div style="display:flex; gap:16px; margin-top:12px; flex-wrap:wrap; align-items:flex-end;">
+                <div style="text-align:center;">
+                    <div style="width:60px;height:40px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:6px;margin:0 auto 6px;"></div>
+                    <div style="font-size:11px; font-weight:600;">6px</div>
+                    <div style="font-size:10px; color:#999;"><code>--radius-sm</code></div>
+                    <div style="font-size:10px; color:#999;">inputs, selects, tags</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="width:60px;height:40px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:8px;margin:0 auto 6px;"></div>
+                    <div style="font-size:11px; font-weight:600;">8px</div>
+                    <div style="font-size:10px; color:#999;"><code>--radius-md</code></div>
+                    <div style="font-size:10px; color:#999;">color-row, demo cards</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="width:60px;height:40px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:12px;margin:0 auto 6px;"></div>
+                    <div style="font-size:11px; font-weight:600;">12px</div>
+                    <div style="font-size:10px; color:#999;"><code>--radius-lg</code></div>
+                    <div style="font-size:10px; color:#999;">preview frame, large cards</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="width:60px;height:40px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:7px;margin:0 auto 6px;"></div>
+                    <div style="font-size:11px; font-weight:600;">7px</div>
+                    <div style="font-size:10px; color:#999;">— (hardcoded)</div>
+                    <div style="font-size:10px; color:#999;">primary CTA button only</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="width:60px;height:40px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:8px;margin:0 auto 6px;"></div>
+                    <div style="font-size:11px; font-weight:600;">8px</div>
+                    <div style="font-size:10px; color:#999;">— (hardcoded)</div>
+                    <div style="font-size:10px; color:#999;">brand icon square</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="width:60px;height:40px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px;margin:0 auto 6px;"></div>
+                    <div style="font-size:11px; font-weight:600;">10px</div>
+                    <div style="font-size:10px; color:#999;">— (hardcoded)</div>
+                    <div style="font-size:10px; color:#999;">mobile tab buttons</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="width:60px;height:20px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:20px;margin:0 auto 6px;"></div>
+                    <div style="font-size:11px; font-weight:600;">20px</div>
+                    <div style="font-size:10px; color:#999;">— (hardcoded)</div>
+                    <div style="font-size:10px; color:#999;">toggle pill</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===== COMPONENTS ===== -->
+    <div class="section">
+        <div class="section-title">05 — Components</div>
+        <h2 style="margin-bottom:6px;">Component Library</h2>
+        <p>These are the building blocks used in every config UI. Replicate these exactly — don't invent new variants without updating this guide.</p>
+
+        <div class="demo-grid" style="margin-top:20px;">
+
+            <!-- Brand Header -->
+            <div class="demo-card">
+                <div class="demo-card-label">Brand / Sidebar Header</div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="demo-brand-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="8" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
+                    </div>
+                    <div style="font-size:15px; font-weight:700; letter-spacing:-0.02em; display:flex; align-items:center; gap:10px;">
+                        Plugin Name <span class="demo-badge">v1.0</span>
+                    </div>
+                </div>
+                <div style="margin-top:12px; font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                    Brand icon: 30×30px, accent bg, 8px radius, SVG icon relevant to the plugin. Product name: 15px/700. Version badge: indigo tint bg.
+                </div>
+            </div>
+
+            <!-- Text Input -->
+            <div class="demo-card">
+                <div class="demo-card-label">Text / Number Input</div>
+                <div style="margin-bottom:12px;">
+                    <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Label</label>
+                    <input class="demo-input" type="text" placeholder="Placeholder text" />
+                    <div style="font-size:11px; color:var(--text-secondary); margin-top:6px; line-height:1.4;">Helper text beneath the control.</div>
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                    Height 36px · padding 0 10px · border <code>#E5E5E5</code> · focus border <code>--accent</code> · focus ring <code>rgba(79,70,229,0.1)</code>
+                </div>
+            </div>
+
+            <!-- Select -->
+            <div class="demo-card">
+                <div class="demo-card-label">Select / Dropdown</div>
+                <label style="display:block; font-size:13px; font-weight:500; margin-bottom:6px;">Label</label>
+                <select class="demo-select">
+                    <option>Option A</option>
+                    <option>Option B</option>
+                    <option>Option C</option>
+                </select>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.5; margin-top:12px;">
+                    Same sizing as text input. Custom chevron via <code>background-image</code> SVG. <code>appearance: none</code> to remove native arrow.
+                </div>
+            </div>
+
+            <!-- Toggle rows -->
+            <div class="demo-card">
+                <div class="demo-card-label">Toggle Rows</div>
+                <div class="demo-toggle-row"><span class="demo-toggle-label">Feature enabled</span><input type="checkbox" class="demo-toggle on" /></div>
+                <div class="demo-toggle-row"><span class="demo-toggle-label">Another option</span><input type="checkbox" class="demo-toggle" /></div>
+                <div class="demo-toggle-row"><span class="demo-toggle-label">Show something</span><input type="checkbox" class="demo-toggle on" /></div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.5; margin-top:8px;">
+                    36×20px pill · thumb 16×16px · off color <code>#E5E5E5</code> · on color <code>--accent</code>. Label: 13px/400/<code>--text-secondary</code>.
+                </div>
+            </div>
+
+            <!-- Primary CTA -->
+            <div class="demo-card">
+                <div class="demo-card-label">Primary CTA Button (Copy Code)</div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="demo-btn-primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                        Copy Code
+                    </button>
+                    <button class="demo-btn-ghost">Ghost Button</button>
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.5; margin-top:12px;">
+                    Primary: 9px 20px padding · 13px/600 · 7px radius · accent bg · shadow <code>rgba(79,70,229,0.3)</code>. Always place in the topbar/header — it's the one clear action.
+                </div>
+            </div>
+
+            <!-- Accordion section header -->
+            <div class="demo-card">
+                <div class="demo-card-label">Accordion Section Header</div>
+                <div class="demo-accordion-header">
+                    Layout &amp; Structure
+                    <svg width="6" height="6" viewBox="0 0 6 6" fill="none"><path d="M1 1l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 1L1 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="display:none"/></svg>
+                </div>
+                <div class="demo-accordion-header">
+                    Styling &amp; Colors
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.5; margin-top:8px;">
+                    12px / 600 / uppercase / 0.07em letter-spacing / <code>--text-tertiary</code>. Caret via CSS border trick (no extra icon). Hover darkens to <code>--text-main</code>.
+                </div>
+            </div>
+
+            <!-- Color picker row -->
+            <div class="demo-card">
+                <div class="demo-card-label">Color Picker Group</div>
+                <div class="demo-color-row">
+                    <div class="demo-color-chip">
+                        <span>Active Background</span>
+                        <div class="demo-color-dot" style="background:#4F46E5;"></div>
+                    </div>
+                    <div class="demo-color-chip">
+                        <span>Active Text</span>
+                        <div class="demo-color-dot" style="background:#ffffff; border:1px solid #ccc;"></div>
+                    </div>
+                    <div class="demo-color-chip">
+                        <span>Default Text</span>
+                        <div class="demo-color-dot" style="background:#555555;"></div>
+                    </div>
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.5; margin-top:12px;">
+                    Wrap related colors in a <code>#FAFAFA</code> inset box with 12px padding and <code>--radius-md</code>. Labels: 12px/500. Swatch: 28×28px circle.
+                </div>
+            </div>
+
+            <!-- Version badge -->
+            <div class="demo-card">
+                <div class="demo-card-label">Version Badge</div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                    <span class="demo-badge">v3.5</span>
+                    <span class="demo-badge">v1.0</span>
+                    <span class="demo-badge">Beta</span>
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.5; margin-top:12px;">
+                    10px/600/uppercase · bg <code>#EEF2FF</code> · border <code>#C7D2FE</code> · text <code>--accent</code> · 2px 7px padding · 4px radius. Always placed next to the product name.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===== CODE DRAWER ===== -->
+    <div class="section">
+        <div class="section-title">06 — Code Drawer &amp; Syntax Highlighting</div>
+        <h2 style="margin-bottom:6px;">Dark code panel</h2>
+        <p>The code output drawer sits at the bottom of the main content area, always visible. It uses a dark theme with syntax highlighting applied via JS regex replacement.</p>
+
+        <pre class="code-block" style="margin-top:20px;"><span class="hl-tag">&lt;style&gt;</span>#gridThumbs{opacity:0;}<span class="hl-tag">&lt;/style&gt;</span>
+<span class="hl-tag">&lt;link rel="stylesheet" href="plugin.css"&gt;</span>
+<span class="hl-tag">&lt;script&gt;</span>
+<span class="hl-kw">window</span>.<span class="hl-kw">PORTFOLIO_CONFIG</span> = {
+    <span class="hl-key">"layout"</span>: <span class="hl-str">"top"</span>,
+    <span class="hl-key">"searchEnabled"</span>: <span class="hl-bool">true</span>,
+    <span class="hl-key">"itemsPerPage"</span>: <span class="hl-num">8</span>,
+    <span class="hl-key">"noResultsText"</span>: <span class="hl-str">"No results found."</span>
+};
+<span class="hl-tag">&lt;/script&gt;</span>
+<span class="hl-tag">&lt;script src="plugin.js" defer&gt;&lt;/script&gt;</span></pre>
+
+        <div style="margin-top:20px;">
+            <h3>Syntax token colors</h3>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+                <div style="background:#0D0D0D;padding:8px 14px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px;"><span class="hl-key">"key"</span> <span style="color:#888;">— #E5BF78 amber</span></div>
+                <div style="background:#0D0D0D;padding:8px 14px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px;"><span class="hl-str">"string"</span> <span style="color:#888;">— #87C98F green</span></div>
+                <div style="background:#0D0D0D;padding:8px 14px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px;"><span class="hl-bool">true</span> <span style="color:#888;">— #79B8FF blue</span></div>
+                <div style="background:#0D0D0D;padding:8px 14px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px;"><span class="hl-num">123</span> <span style="color:#888;">— #FF9D7C orange</span></div>
+                <div style="background:#0D0D0D;padding:8px 14px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px;"><span class="hl-tag">&lt;tag&gt;</span> <span style="color:#888;">— #6B8CAE slate</span></div>
+                <div style="background:#0D0D0D;padding:8px 14px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px;"><span class="hl-kw">window</span> <span style="color:#888;">— #C678DD purple</span></div>
+            </div>
+        </div>
+
+        <div style="margin-top:20px; font-size:13px; color:var(--text-secondary); line-height:1.6;">
+            <strong style="color:var(--text-main);">Important:</strong> Store the raw (un-highlighted) code in a <code>rawCode</code> variable and use that for clipboard copy — never read <code>innerHTML</code> for copying. The <code>#codeOutput</code> element uses <code>innerHTML</code> for display and the variable for copy.
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===== MOBILE ===== -->
+    <div class="section">
+        <div class="section-title">07 — Mobile Tab Navigation</div>
+        <h2 style="margin-bottom:6px;">Bottom tab bar (&lt;1024px)</h2>
+        <p>On mobile the entire UI shifts to a three-tab bottom navigation: Settings, Preview, Code.</p>
+
+        <div style="margin-top:20px; max-width:400px;">
+            <div style="background:#fff; border:1px solid var(--border-light); border-radius:12px; overflow:hidden;">
+                <div style="padding:16px; border-bottom:1px solid var(--border-light); font-size:12px; color:var(--text-secondary);">↑ Full-screen panel content above</div>
+                <div style="display:flex; height:68px; padding:8px 12px; gap:6px; align-items:stretch; border-top:1px solid var(--border-light);">
+                    <div style="flex:1; background:var(--accent); color:#fff; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:11px; font-weight:600;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        Settings
+                    </div>
+                    <div style="flex:1; background:transparent; color:#999; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:11px; font-weight:500;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        Preview
+                    </div>
+                    <div style="flex:1; background:transparent; color:#999; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:11px; font-weight:500;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        Code
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:20px;">
+            <ul class="rules-list">
+                <li><div class="rule-icon">1</div><div class="rule-text"><strong>Tab bar height: 68px</strong> plus <code>env(safe-area-inset-bottom)</code> for iOS notch. Always <code>position: fixed; bottom: 0</code>.</div></li>
+                <li><div class="rule-icon">2</div><div class="rule-text"><strong>Active tab:</strong> solid <code>--accent</code> background, white text/icon, 600 weight, 10px border-radius.</div></li>
+                <li><div class="rule-icon">3</div><div class="rule-text"><strong>Inactive tab:</strong> transparent bg, <code>--text-tertiary</code> color, icon opacity 50%.</div></li>
+                <li><div class="rule-icon">4</div><div class="rule-text"><strong>Copy Code button</strong> must appear in the sidebar header on mobile — users are on Settings tab most often.</div></li>
+                <li><div class="rule-icon">5</div><div class="rule-text"><strong>Sidebar content</strong> fills the full viewport minus the tab bar. Header stays fixed; only <code>.sidebar-content</code> scrolls.</div></li>
+            </ul>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===== SIDEBAR SECTIONS ===== -->
+    <div class="section">
+        <div class="section-title">08 — Sidebar Section Order</div>
+        <h2 style="margin-bottom:6px;">Recommended section sequence</h2>
+        <p>New plugin config UIs should follow this section order. It mirrors the mental model users have: structure first, appearance second, text last.</p>
+
+        <div class="checklist" style="margin-top:20px;">
+            <div class="checklist-item"><div class="checklist-icon">1</div><div><strong>Layout &amp; Structure</strong> — main layout, sidebar/grid widths, filter groups, labels. Open by default.</div></div>
+            <div class="checklist-item"><div class="checklist-icon">2</div><div><strong>Styling &amp; Colors</strong> — preset theme, alignment, spacing, border-radius, color pickers.</div></div>
+            <div class="checklist-item"><div class="checklist-icon">3</div><div><strong>Item Meta / Display</strong> — what info shows on each grid card (tags, year, location, excerpt, etc.).</div></div>
+            <div class="checklist-item"><div class="checklist-icon">4</div><div><strong>Text Labels</strong> — all user-visible strings (All, Reset, Search placeholder, etc.).</div></div>
+            <div class="checklist-item"><div class="checklist-icon">5</div><div><strong>Motion</strong> — animation type, speed, stagger. Hide speed + stagger controls when animation is "None".</div></div>
+            <div class="checklist-item"><div class="checklist-icon">6</div><div><strong>Advanced Behavior</strong> — desktop/mobile filter style, multi-select, counts, truncation, pagination, sort. Collapsed by default.</div></div>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===== CSS TEMPLATE ===== -->
+    <div class="section">
+        <div class="section-title">09 — CSS Root Template</div>
+        <h2 style="margin-bottom:6px;">Copy-paste starter <code>:root</code></h2>
+        <p>Start every new plugin config UI with this exact block. Change only the brand icon SVG and the product name.</p>
+
+        <pre class="code-block" style="margin-top:20px;"><span class="hl-cmt">/* Paste this :root block into every new plugin config UI */</span>
+:root {
+    <span class="hl-key">--bg-body</span>:          #F5F5F7;
+    <span class="hl-key">--bg-sidebar</span>:       #FFFFFF;
+    <span class="hl-key">--text-main</span>:        #1C1C1E;
+    <span class="hl-key">--text-secondary</span>:   #666666;
+    <span class="hl-key">--text-tertiary</span>:    #999999;
+    <span class="hl-key">--border-light</span>:     #E5E5E5;
+    <span class="hl-key">--border-hover</span>:     #D4D4D4;
+    <span class="hl-key">--border-active</span>:    #4F46E5;
+    <span class="hl-key">--accent</span>:           #4F46E5;   <span class="hl-cmt">/* Indigo-600 */</span>
+    <span class="hl-key">--accent-hover</span>:     #4338CA;   <span class="hl-cmt">/* Indigo-700 */</span>
+    <span class="hl-key">--accent-contrast</span>:  #FFFFFF;
+    <span class="hl-key">--shadow-sm</span>:        0 1px 2px rgba(0,0,0,0.04);
+    <span class="hl-key">--shadow-md</span>:        0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    <span class="hl-key">--radius-sm</span>:        6px;
+    <span class="hl-key">--radius-md</span>:        8px;
+    <span class="hl-key">--radius-lg</span>:        12px;
+    <span class="hl-key">--sidebar-width</span>:    380px;
+    <span class="hl-key">--header-height</span>:    60px;
+}</pre>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===== DO / DON'T ===== -->
+    <div class="section">
+        <div class="section-title">10 — Do / Don't</div>
+        <h2 style="margin-bottom:20px;">Quick rules</h2>
+
+        <div class="two-col">
+            <div>
+                <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#059669; margin-bottom:12px;">✓ Do</div>
+                <ul class="rules-list">
+                    <li><div class="rule-icon" style="background:#DCFCE7;color:#059669;">✓</div><div class="rule-text">Use <code>--accent</code> for all interactive states (focus, checked, active tabs, CTA button).</div></li>
+                    <li><div class="rule-icon" style="background:#DCFCE7;color:#059669;">✓</div><div class="rule-text">Keep section headers 12px/uppercase/0.07em — always match this exactly.</div></li>
+                    <li><div class="rule-icon" style="background:#DCFCE7;color:#059669;">✓</div><div class="rule-text">Default new boolean toggles to <strong>off</strong> unless the feature is widely used (like animations).</div></li>
+                    <li><div class="rule-icon" style="background:#DCFCE7;color:#059669;">✓</div><div class="rule-text">Show helper text below controls that aren't self-explanatory (11px/#666).</div></li>
+                    <li><div class="rule-icon" style="background:#DCFCE7;color:#059669;">✓</div><div class="rule-text">Hide dependent controls (e.g., sticky spacing only when sticky is on).</div></li>
+                    <li><div class="rule-icon" style="background:#DCFCE7;color:#059669;">✓</div><div class="rule-text">Store raw code in a variable; use <code>innerHTML</code> only for highlighted display.</div></li>
+                    <li><div class="rule-icon" style="background:#DCFCE7;color:#059669;">✓</div><div class="rule-text">Place "Copy Code" CTA in both the desktop topbar and the mobile sidebar header.</div></li>
+                </ul>
+            </div>
+            <div>
+                <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#DC2626; margin-bottom:12px;">✗ Don't</div>
+                <ul class="rules-list">
+                    <li><div class="rule-icon" style="background:#FEE2E2;color:#DC2626;">✗</div><div class="rule-text">Don't hardcode colors outside of the <code>:root</code> block — always reference CSS variables.</div></li>
+                    <li><div class="rule-icon" style="background:#FEE2E2;color:#DC2626;">✗</div><div class="rule-text">Don't use a sidebar narrower than 380px — labels will truncate.</div></li>
+                    <li><div class="rule-icon" style="background:#FEE2E2;color:#DC2626;">✗</div><div class="rule-text">Don't add more than 6 accordion sections — it overwhelms users.</div></li>
+                    <li><div class="rule-icon" style="background:#FEE2E2;color:#DC2626;">✗</div><div class="rule-text">Don't use flat gray thumbnails in preview cards — use the 4-color gradient pattern.</div></li>
+                    <li><div class="rule-icon" style="background:#FEE2E2;color:#DC2626;">✗</div><div class="rule-text">Don't change the font. Inter is the only typeface for UI; JetBrains Mono for code only.</div></li>
+                    <li><div class="rule-icon" style="background:#FEE2E2;color:#DC2626;">✗</div><div class="rule-text">Don't use a different accent color — keep <code>#4F46E5</code> across all plugins for brand consistency.</div></li>
+                    <li><div class="rule-icon" style="background:#FEE2E2;color:#DC2626;">✗</div><div class="rule-text">Don't copy <code>innerHTML</code> for the clipboard — it will include HTML tags in the output.</div></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top:64px; padding-top:24px; border-top:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:center; color:var(--text-tertiary); font-size:12px;">
+        <div>Squarespace Plugins — Config UI Design Guide</div>
+        <div>Last updated: May 2026</div>
+    </div>
+
+</body>
+</html>
