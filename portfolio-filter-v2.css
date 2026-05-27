@@ -223,7 +223,7 @@ body.pf-ready #gridThumbs {
     column-gap: var(--pf-gap, 10px);
 }
 
-.sidebar-layout .filters-wrapper {
+.portfolio-main-wrapper.layout-sidebar .filters-wrapper {
     flex-direction: column;
     row-gap: var(--pf-group-gap, 25px);
     column-gap: 0;
@@ -382,17 +382,23 @@ body.pf-ready #gridThumbs {
 }
 
 .reset-btn {
-    margin-left: 10px;
+    margin-left: 6px;
     background: none;
-    border: none;
-    text-decoration: underline;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+    padding: 5px 12px;
+    text-decoration: none;
     cursor: pointer;
-    font-size: 12px;
-    color: #888;
+    font-size: 13px;
+    color: #555;
+    white-space: nowrap;
+    transition: border-color 0.2s ease, color 0.2s ease;
 }
 
 .reset-btn:hover {
+    border-color: #aaa;
     color: #333;
+    text-decoration: none;
 }
 
 .pf-hide-label {
@@ -621,99 +627,7 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     color: #666;
 }
 
-/* Responsive */
-@media (max-width: 1023px) {
-    .portfolio-main-wrapper.sidebar-layout {
-        flex-direction: column;
-    }
-
-    .portfolio-main-wrapper.sidebar-layout .portfolio-control-panel {
-        width: 100%;
-        position: static;
-        margin-bottom: 30px;
-        padding-right: 0;
-    }
-
-    .portfolio-content-col {
-        width: 100%;
-    }
-
-    .portfolio-control-panel.mobile-style-chips .filter-options {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        padding-bottom: 6px;
-    }
-
-    .portfolio-control-panel.mobile-style-wrap .filter-options {
-        flex-wrap: wrap;
-        overflow: visible;
-    }
-
-    .portfolio-control-panel.mobile-style-checkbox .filter-options {
-        flex-direction: column;
-        align-items: flex-start;
-        flex-wrap: nowrap;
-        overflow: visible;
-        padding-bottom: 6px;
-        gap: var(--pf-gap, 10px);
-    }
-
-    .portfolio-control-panel.mobile-style-checkbox .filter-dropdown-content {
-        flex-direction: column;
-        align-items: flex-start;
-        flex-wrap: nowrap;
-        overflow: hidden;
-        padding-bottom: 6px;
-        gap: var(--pf-gap, 10px);
-        max-height: none;
-        opacity: 1;
-        padding: 10px var(--pf-pad-h, 10px);
-        transition: height 0.3s ease, opacity 0.25s ease;
-    }
-
-    .portfolio-control-panel.mobile-style-checkbox .filter-dropdown-content[aria-hidden="true"] {
-        height: 0;
-        opacity: 0;
-        padding-top: 0;
-        padding-bottom: 0;
-        pointer-events: none;
-    }
-
-    .portfolio-control-panel.mobile-behavior-accordion .filter-options {
-        max-height: 0;
-        overflow: hidden;
-        opacity: 0;
-        padding-top: 0;
-        padding-bottom: 0;
-        transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
-    }
-
-    .portfolio-control-panel.mobile-behavior-accordion .filter-group-container.open .filter-options {
-        max-height: 1000vh !important;
-        opacity: 1;
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-
-    .portfolio-control-panel.mobile-behavior-accordion .filter-group-container.open .pf-caret {
-        transform: rotate(180deg);
-    }
-
-    .portfolio-control-panel.mobile-behavior-accordion .filter-group-header .pf-caret {
-        width: 12px;
-        height: 8px;
-        transition: transform 0.25s ease;
-        margin-left: 8px;
-    }
-
-    .portfolio-control-panel.mobile-behavior-accordion .filter-group-container.open .pf-caret {
-        transform: rotate(180deg);
-    }
-
-    .portfolio-control-panel.mobile-behavior-accordion .pf-hide-label {
-        visibility: visible;
-    }
-}
+/* Responsive — mobile styles consolidated in @media (max-width: 1024px) blocks below */
 
 @media (min-width: 1024px) {
 
@@ -724,6 +638,15 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
         overflow: visible;
         padding-bottom: 0;
     }
+}
+
+/* Chips: hide scrollbar track while preserving scroll functionality */
+.portfolio-control-panel.mobile-style-chips .filter-options {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+.portfolio-control-panel.mobile-style-chips .filter-options::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
 }
 
 .portfolio-main-wrapper #gridThumbs {
@@ -950,6 +873,47 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
         padding-bottom: 5px;
         gap: var(--pf-gap);
     }
+
+    /* Checkbox-dropdown on mobile: aria-hidden driven open/close */
+    .portfolio-control-panel.mobile-style-checkbox .filter-dropdown-content[aria-hidden="true"] {
+        height: 0;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        pointer-events: none;
+    }
+
+    /* Mobile accordion: collapse/expand filter groups */
+    .portfolio-control-panel.mobile-behavior-accordion .filter-options {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+    }
+
+    .portfolio-control-panel.mobile-behavior-accordion .filter-group-container.open .filter-options {
+        max-height: 1000vh !important;
+        opacity: 1;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .portfolio-control-panel.mobile-behavior-accordion .filter-group-header .pf-caret {
+        width: 12px;
+        height: 8px;
+        transition: transform 0.25s ease;
+        margin-left: 8px;
+    }
+
+    .portfolio-control-panel.mobile-behavior-accordion .filter-group-container.open .pf-caret {
+        transform: rotate(180deg);
+    }
+
+    .portfolio-control-panel.mobile-behavior-accordion .pf-hide-label {
+        visibility: visible;
+    }
 }
 
 .filter-option-btn {
@@ -1140,10 +1104,14 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
 }
 
 @media (min-width: 1025px) {
-    .portfolio-control-panel.pf-topbar .pf-topbar-right .search-group input,
-    .portfolio-control-panel.pf-topbar .pf-topbar-right .sort-group select {
+    .portfolio-control-panel.pf-topbar .pf-topbar-right .search-group input {
         width: 220px;
         max-width: 100%;
+    }
+    .portfolio-control-panel.pf-topbar .pf-topbar-right .sort-group select {
+        width: auto;
+        min-width: 120px;
+        max-width: 200px;
     }
 }
 
@@ -1156,6 +1124,27 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
    Inline buttons expand horizontally; mixing groups on the same row
    makes it impossible to tell where one group ends and another begins. */
 .portfolio-control-panel.pf-topbar.layout-inline .filter-group-container {
+    width: 100%;
+}
+
+/* Top+inline multi-group: search/sort gets its own full-width row above the filter rows.
+   With a single group the side-by-side layout works fine (filters left, search/sort right).
+   With 2+ groups stacked vertically, search/sort would only align with row 1 and leave
+   blank space beside rows 2+. Stacking puts search/sort cleanly above all filter rows. */
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .pf-topbar-row,
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .pf-topbar-row {
+    flex-direction: column;
+    gap: 12px;
+}
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .pf-topbar-right,
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .pf-topbar-right {
+    width: 100%;
+    justify-content: flex-end;
+    margin-left: 0;
+    order: -1; /* above the filter rows */
+}
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .pf-topbar-left,
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .pf-topbar-left {
     width: 100%;
 }
 
@@ -1221,12 +1210,12 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     }
 
     .portfolio-control-panel.pf-topbar .pf-topbar-right {
-        order: 1;
+        order: 2; /* filters appear first on mobile; search/sort follows below */
         width: 100%;
     }
 
     .portfolio-control-panel.pf-topbar .pf-topbar-left {
-        order: 2;
+        order: 1;
         width: 100%;
     }
 

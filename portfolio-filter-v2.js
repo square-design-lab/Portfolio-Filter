@@ -1276,9 +1276,10 @@
             groupWrapper.dataset.group = groupName;
 
             const contentIndex = groupRenderCount++;
-            const forceMobileLabel = accordionEnabled && isMobileNow;
+            const forceMobileLabel = accordionEnabled; // Always render headers when accordion configured — fixes broken accordion after desktop→mobile resize
             const forceLabelForLayout = CONFIG.filterLayout !== 'inline';
-            const shouldShowLabel = forceLabelForLayout || CONFIG.showFilterLabel || forceMobileLabel;
+            const isTopbarMultiGroup = isTopbarLayout && !isDropdown && groupNames.length > 1; // Show group labels in top+inline multi-group mode
+            const shouldShowLabel = forceLabelForLayout || CONFIG.showFilterLabel || forceMobileLabel || isTopbarMultiGroup;
             let shouldStartOpen = applyDropdownInit && isSidebarLayout && dropdownRenderIndex === 0;
             if (accordionEnabled && isMobileNow) shouldStartOpen = false;
             if (isDropdown) dropdownRenderIndex++;
