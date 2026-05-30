@@ -1497,13 +1497,13 @@
                             updateUrl();
                         });
                         label.appendChild(chk);
-                        label.appendChild(document.createTextNode(`${TEXT.allText} ${parent}`));
+                        label.appendChild(document.createTextNode('All'));
                         subContainer.appendChild(label);
                     } else {
                         const allBtn = document.createElement('button');
                         allBtn.type = 'button';
                         allBtn.className = 'filter-option-btn child-btn child-btn-all';
-                        allBtn.textContent = `${TEXT.allText} ${parent}`;
+                        allBtn.textContent = 'All';
                         allBtn.dataset.parent = parent;
                         allBtn.addEventListener('click', (e) => {
                             e.preventDefault();
@@ -1768,6 +1768,30 @@
         updateUrl();
     }
 
+    // In multi-group topbar inline the subcategory bar is absolute-positioned inside its
+    // filter-group-container (see CSS).  This aligns its left padding with the parent button
+    // so the options visually start directly below the item that was clicked.
+    function positionSubcategoryIndent(groupEl) {
+        const panel = groupEl?.closest('.portfolio-control-panel');
+        if (!panel || !panel.classList.contains('pf-topbar') || !panel.classList.contains('layout-inline')) return;
+        if (panel.classList.contains('pf-groups-1')) return; // single-group handled by panel-level positioning
+
+        const activeWrapper = groupEl.querySelector('.filter-item-wrapper.active');
+        const childOptions = activeWrapper?.querySelector('.filter-options.children');
+        if (!childOptions) {
+            // No active subcategory — clear any previously set indent
+            groupEl.querySelectorAll('.filter-options.children').forEach(c => { c.style.paddingLeft = ''; });
+            return;
+        }
+        const parentBtn = activeWrapper.querySelector('.parent-btn');
+        if (!parentBtn) return;
+
+        const groupRect = groupEl.getBoundingClientRect();
+        const parentRect = parentBtn.getBoundingClientRect();
+        const indent = Math.max(0, Math.round(parentRect.left - groupRect.left));
+        childOptions.style.paddingLeft = `${indent}px`;
+    }
+
     function updateAllUI() {
         const useCheckboxLayout = CONFIG.filterLayout === 'checkbox' || (isMobileViewport() && (CONFIG.mobile?.displayStyle === 'checkbox' || CONFIG.mobile?.behavior === 'checkbox'));
         // Clear all active states
@@ -1844,6 +1868,12 @@
             if (allBtn) allBtn.classList.add('active');
             const allChk = groupEl.querySelector('.group-all-chk');
             if (allChk) allChk.checked = true;
+        });
+
+        // Align subcategory bar indent with its parent button (topbar multi-group only).
+        // Deferred one frame so the layout is computed before we read getBoundingClientRect.
+        requestAnimationFrame(() => {
+            document.querySelectorAll('.filter-group-container').forEach(positionSubcategoryIndent);
         });
     }
 

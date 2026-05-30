@@ -769,6 +769,7 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     position: relative;
 }
 
+/* Single-group: subcategory positions relative to the whole panel (same as before) */
 .portfolio-control-panel.pf-topbar.layout-inline .filter-options.children {
     position: absolute;
     top: 100%;
@@ -784,6 +785,19 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     border-bottom: 1px solid var(--pf-border-def, #ddd);
     z-index: 100;
     animation: pfSubfilterIn 0.18s ease;
+}
+
+/* Multi-group: each filter-group-container is the new positioning context so the
+   subcategory bar drops just below its own row, not after all filter groups.
+   positionSubcategoryIndent() in JS sets padding-left to align with the clicked parent. */
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-group-container,
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-group-container {
+    position: relative;
+}
+/* Reset top so bar drops right below the group row (not the full panel) */
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-options.children,
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-options.children {
+    top: calc(100% + 4px);
 }
 
 @keyframes pfSubfilterIn {
