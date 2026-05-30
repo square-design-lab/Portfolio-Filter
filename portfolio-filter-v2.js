@@ -1262,6 +1262,12 @@
         filtersWrapper.className = 'filters-wrapper';
 
         const groupNames = Object.keys(state.hierarchy);
+        // In topbar inline with multiple groups, subcategory containers are detached from
+        // their filter-item-wrapper and appended directly to filter-group-container so they
+        // sit in the normal flow and push subsequent rows down when opened.
+        const isTopbarMultiGroupInline = isTopbarLayout && !isDropdown &&
+            groupNames.filter(n => n !== 'Categories').length > 1;
+
         groupNames.forEach(groupName => {
             if (groupName === 'Categories') return;
             const displayName = groupName === 'Tags' ? TEXT.defaultFilterName : groupName;
@@ -1274,6 +1280,7 @@
             const groupWrapper = document.createElement('div');
             groupWrapper.className = 'filter-group-container';
             groupWrapper.dataset.group = groupName;
+            const subContainersForThisGroup = []; // collected then appended after optionsContainer
 
             const contentIndex = groupRenderCount++;
             const forceMobileLabel = accordionEnabled; // Always render headers when accordion configured — fixes broken accordion after desktop→mobile resize
@@ -1546,12 +1553,21 @@
                             subContainer.appendChild(btn);
                         }
                     });
-                    itemWrapper.appendChild(subContainer);
+                    if (isTopbarMultiGroupInline) {
+                        // Detach from item wrapper so it can push subsequent rows down in-flow
+                        subContainer.dataset.subcategoryParent = parent;
+                        subContainersForThisGroup.push(subContainer);
+                    } else {
+                        itemWrapper.appendChild(subContainer);
+                    }
                 }
 
                 optionsContainer.appendChild(itemWrapper);
             });
             groupWrapper.appendChild(optionsContainer);
+            // Detached subcategory containers (topbar multi-group inline only): append
+            // as direct children of groupWrapper so they live in the normal flow.
+            subContainersForThisGroup.forEach(sc => groupWrapper.appendChild(sc));
             applyTruncation(optionsContainer);
 
             if (accordionEnabled && isMobileNow && !shouldHideByDefault && !isDropdown) {
@@ -1768,28 +1784,19 @@
         updateUrl();
     }
 
-    // In multi-group topbar inline the subcategory bar is absolute-positioned inside its
-    // filter-group-container (see CSS).  This aligns its left padding with the parent button
-    // so the options visually start directly below the item that was clicked.
-    function positionSubcategoryIndent(groupEl) {
-        const panel = groupEl?.closest('.portfolio-control-panel');
-        if (!panel || !panel.classList.contains('pf-topbar') || !panel.classList.contains('layout-inline')) return;
-        if (panel.classList.contains('pf-groups-1')) return; // single-group handled by panel-level positioning
-
-        const activeWrapper = groupEl.querySelector('.filter-item-wrapper.active');
-        const childOptions = activeWrapper?.querySelector('.filter-options.children');
-        if (!childOptions) {
-            // No active subcategory — clear any previously set indent
-            groupEl.querySelectorAll('.filter-options.children').forEach(c => { c.style.paddingLeft = ''; });
-            return;
-        }
-        const parentBtn = activeWrapper.querySelector('.parent-btn');
+    // Sets padding-left on a detached subcategory container so its first option aligns
+    // directly below the parent button that opened it.  Called synchronously (no RAF)
+    // before pf-subcategory-active is added so the indent is already at its final value
+    // when the CSS max-height transition begins — this prevents the "slide from left" effect.
+    function positionSubcategoryIndent(subEl, groupEl) {
+        if (!subEl || !groupEl) return;
+        const parentName = subEl.dataset.subcategoryParent;
+        if (!parentName) return;
+        const parentBtn = groupEl.querySelector(`.parent-btn[data-value="${CSS.escape(parentName)}"]`);
         if (!parentBtn) return;
-
         const groupRect = groupEl.getBoundingClientRect();
         const parentRect = parentBtn.getBoundingClientRect();
-        const indent = Math.max(0, Math.round(parentRect.left - groupRect.left));
-        childOptions.style.paddingLeft = `${indent}px`;
+        subEl.style.paddingLeft = `${Math.max(0, Math.round(parentRect.left - groupRect.left))}px`;
     }
 
     function updateAllUI() {
@@ -1803,6 +1810,11 @@
         document.querySelectorAll('.group-all-chk').forEach(c => c.checked = false);
         document.querySelectorAll('.filter-item-wrapper').forEach(w => w.classList.remove('active'));
         document.querySelectorAll('.filter-dropdown-header, .filter-group-header').forEach(h => h.classList.remove('active'));
+        // Clear detached subcategory containers (topbar multi-group inline)
+        document.querySelectorAll('.filter-options.children.pf-subcategory-active').forEach(c => {
+            c.classList.remove('pf-subcategory-active');
+            c.style.paddingLeft = '';
+        });
 
         Object.keys(state.activeFilters).forEach(group => {
             const groupEl = document.querySelector(`.filter-group-container[data-group="${group}"]`);
@@ -1814,9 +1826,12 @@
                     const parent = parts[0];
                     const child = parts[1];
 
-                    // Activate Wrapper (shows children)
+                    // Activate Wrapper (shows children in sidebar/single-group)
                     const wrapper = groupEl.querySelector(`.filter-item-wrapper[data-parent="${parent}"]`);
                     if (wrapper) wrapper.classList.add('active');
+                    // Activate detached subcategory container (topbar multi-group inline)
+                    const detachedSub = groupEl.querySelector(`.filter-options.children[data-subcategory-parent="${parent}"]`);
+                    if (detachedSub) { positionSubcategoryIndent(detachedSub, groupEl); detachedSub.classList.add('pf-subcategory-active'); }
 
                     // Activate Child Button/Checkbox
                     if (useCheckboxLayout) {
@@ -1837,7 +1852,10 @@
                     // Strictly Parent Selected (ALL)
                     const parent = val;
                     const wrapper = groupEl.querySelector(`.filter-item-wrapper[data-parent="${parent}"]`);
-                    if (wrapper) wrapper.classList.add('active'); // Show Children
+                    if (wrapper) wrapper.classList.add('active'); // Show Children (sidebar/single-group)
+                    // Activate detached subcategory container (topbar multi-group inline)
+                    const detachedSub2 = groupEl.querySelector(`.filter-options.children[data-subcategory-parent="${parent}"]`);
+                    if (detachedSub2) { positionSubcategoryIndent(detachedSub2, groupEl); detachedSub2.classList.add('pf-subcategory-active'); }
 
                     if (useCheckboxLayout) {
                         const pChk = groupEl.querySelector(`.parent-chk[data-value="${parent}"]`);
@@ -1870,11 +1888,6 @@
             if (allChk) allChk.checked = true;
         });
 
-        // Align subcategory bar indent with its parent button (topbar multi-group only).
-        // Deferred one frame so the layout is computed before we read getBoundingClientRect.
-        requestAnimationFrame(() => {
-            document.querySelectorAll('.filter-group-container').forEach(positionSubcategoryIndent);
-        });
     }
 
     function resetAll() {

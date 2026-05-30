@@ -313,7 +313,6 @@ body.pf-ready #gridThumbs {
 .filter-options.children {
     margin-top: 10px;
     padding-left: 10px;
-    border-left: 2px solid #eee;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -782,22 +781,48 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     flex-wrap: wrap;
     gap: var(--pf-gap);
     background: var(--pf-subfilter-bg, #fff);
-    border-bottom: 1px solid var(--pf-border-def, #ddd);
     z-index: 100;
     animation: pfSubfilterIn 0.18s ease;
 }
 
-/* Multi-group: each filter-group-container is the new positioning context so the
-   subcategory bar drops just below its own row, not after all filter groups.
-   positionSubcategoryIndent() in JS sets padding-left to align with the clicked parent. */
-.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-group-container,
-.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-group-container {
-    position: relative;
+/* ── Multi-group topbar inline: detached subcategory containers ────────────────────
+   The JS build appends each .filter-options.children as a *direct child* of its
+   .filter-group-container (not nested inside .filter-item-wrapper) so it sits in
+   the normal flow and pushes subsequent filter rows down when open.
+   A CSS max-height transition produces the slide-down effect.
+   padding-left is set synchronously by positionSubcategoryIndent() before the
+   transition class is added, so the indent never animates (no left-to-right slide). */
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-group-container > .filter-options.children,
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-group-container > .filter-options.children {
+    /* Override the topbar absolute-position rule above */
+    position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    background: transparent;
+    animation: none;
+    z-index: auto;
+
+    /* Closed state */
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--pf-gap);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    /* padding-left is set by JS; no padding in transition to avoid horizontal slide */
+    transition: max-height 0.28s ease, opacity 0.2s ease;
 }
-/* Reset top so bar drops right below the group row (not the full panel) */
-.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-options.children,
-.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-options.children {
-    top: calc(100% + 4px);
+
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-group-container > .filter-options.children.pf-subcategory-active,
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-group-container > .filter-options.children.pf-subcategory-active {
+    max-height: 200px;
+    opacity: 1;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
 @keyframes pfSubfilterIn {
