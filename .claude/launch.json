@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "config-ui",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "7723", "--directory", "C:\\Users\\samiu\\Squarespace Plugins\\Portfolio Filter"],
+      "port": 7723
+    }
+  ]
+}
