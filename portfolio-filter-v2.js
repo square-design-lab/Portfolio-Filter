@@ -1810,10 +1810,19 @@
         document.querySelectorAll('.group-all-chk').forEach(c => c.checked = false);
         document.querySelectorAll('.filter-item-wrapper').forEach(w => w.classList.remove('active'));
         document.querySelectorAll('.filter-dropdown-header, .filter-group-header').forEach(h => h.classList.remove('active'));
-        // Clear detached subcategory containers (topbar multi-group inline)
+        // Clear detached subcategory containers (topbar multi-group inline).
+        // padding-left is deferred until the close transition ends — clearing it
+        // immediately alongside removing pf-subcategory-active causes items to
+        // snap to the left edge while max-height is still animating (visible jump).
         document.querySelectorAll('.filter-options.children.pf-subcategory-active').forEach(c => {
             c.classList.remove('pf-subcategory-active');
-            c.style.paddingLeft = '';
+            const clearIndent = (e) => {
+                if (e.propertyName !== 'max-height') return;
+                if (c.classList.contains('pf-subcategory-active')) return; // re-opened before close finished
+                c.style.paddingLeft = '';
+                c.removeEventListener('transitionend', clearIndent);
+            };
+            c.addEventListener('transitionend', clearIndent);
         });
 
         Object.keys(state.activeFilters).forEach(group => {
