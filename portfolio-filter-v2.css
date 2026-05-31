@@ -273,7 +273,7 @@ body.pf-ready #gridThumbs {
     padding: 0 var(--pf-pad-h, 10px);
     border: 1px solid #eee;
     border-radius: var(--pf-radius, 4px);
-    transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+    transition: max-height 0.22s cubic-bezier(0.4, 0, 1, 1), opacity 0.16s ease-in, padding 0.22s cubic-bezier(0.4, 0, 1, 1);
     display: flex;
     flex-wrap: wrap;
     gap: var(--pf-gap, 10px);
@@ -283,6 +283,7 @@ body.pf-ready #gridThumbs {
     max-height: 600px;
     opacity: 1;
     padding: 10px var(--pf-pad-h, 10px);
+    transition: max-height 0.34s cubic-bezier(0, 0, 0.2, 1), opacity 0.26s ease-out, padding 0.28s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .filter-group-container.open .filter-dropdown-header .pf-caret {
@@ -813,8 +814,9 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     opacity: 0;
     padding-top: 0;
     padding-bottom: 0;
-    /* padding-left is set by JS; no padding in transition to avoid horizontal slide */
-    transition: max-height 0.28s ease, opacity 0.2s ease;
+    /* padding-left set by JS — not in transition (prevents horizontal slide on close) */
+    /* Close: accelerates into collapse — feels decisive */
+    transition: max-height 0.22s cubic-bezier(0.4, 0, 1, 1), opacity 0.16s ease-in;
 }
 
 .portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-group-container > .filter-options.children.pf-subcategory-active,
@@ -823,6 +825,8 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     opacity: 1;
     padding-top: 6px;
     padding-bottom: 6px;
+    /* Open: decelerates into reveal — feels smooth and premium */
+    transition: max-height 0.34s cubic-bezier(0, 0, 0.2, 1), opacity 0.26s ease-out;
 }
 
 @keyframes pfSubfilterIn {
@@ -913,6 +917,14 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
         gap: var(--pf-gap);
     }
 
+    /* Smooth height animation for JS-driven checkbox-dropdown toggle on mobile */
+    .portfolio-control-panel.mobile-style-checkbox .filter-dropdown-content {
+        transition: height 0.22s cubic-bezier(0.4, 0, 1, 1), opacity 0.16s ease-in;
+    }
+    .portfolio-control-panel.mobile-style-checkbox .filter-group-container.open .filter-dropdown-content {
+        transition: height 0.34s cubic-bezier(0, 0, 0.2, 1), opacity 0.26s ease-out;
+    }
+
     /* Checkbox-dropdown on mobile: aria-hidden driven open/close */
     .portfolio-control-panel.mobile-style-checkbox .filter-dropdown-content[aria-hidden="true"] {
         height: 0;
@@ -929,7 +941,8 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
         opacity: 0;
         padding-top: 0;
         padding-bottom: 0;
-        transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+        /* Close: fast ease-in */
+        transition: max-height 0.22s cubic-bezier(0.4, 0, 1, 1), opacity 0.16s ease-in, padding 0.22s cubic-bezier(0.4, 0, 1, 1);
     }
 
     .portfolio-control-panel.mobile-behavior-accordion .filter-group-container.open .filter-options {
@@ -937,6 +950,8 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
         opacity: 1;
         padding-top: 10px;
         padding-bottom: 10px;
+        /* Open: smooth deceleration */
+        transition: max-height 0.34s cubic-bezier(0, 0, 0.2, 1), opacity 0.26s ease-out, padding 0.28s cubic-bezier(0, 0, 0.2, 1);
     }
 
     .portfolio-control-panel.mobile-behavior-accordion .filter-group-header .pf-caret {

@@ -562,7 +562,16 @@
             const wantsCheckboxLayout = mobileBehavior === 'checkbox' || mobileDisplay === 'checkbox';
             const mobileStyleClass = wantsCheckboxLayout ? 'mobile-style-checkbox' : (mobileDisplay === 'wrap' ? 'mobile-style-wrap' : 'mobile-style-chips');
             if (mobileStyleClass) container.classList.add(mobileStyleClass);
-            if (CONFIG.mobile?.behavior === 'accordion') {
+
+            // Auto-accordion: when multiple filter groups are present on mobile, always use
+            // accordion regardless of the configured mobile behavior. Chips/wrap with multiple
+            // groups causes subcategory overlay issues and poor UX — accordion is the correct
+            // mobile pattern for multi-group filters.
+            const groupCount = container.querySelectorAll('.filter-group-container').length;
+            const hasGroupHeaders = container.querySelectorAll('.filter-group-header').length > 0;
+            const autoAccordion = groupCount > 1 && hasGroupHeaders && !wantsCheckboxLayout;
+
+            if (CONFIG.mobile?.behavior === 'accordion' || autoAccordion) {
                 container.classList.add('mobile-behavior-accordion');
                 syncAccordionStateForMobile(container);
             } else {
@@ -1294,12 +1303,27 @@
 
             let headerEl;
             const toggleGroup = () => {
-                if (!isDropdown && accordionEnabled && !isMobileViewport()) return;
+                // Non-dropdown inline groups only toggle on mobile (accordion).
+                // On desktop they are always expanded and never toggled.
+                if (!isDropdown && !isMobileViewport()) return;
                 const isMobileCheckboxMode = container.classList.contains('mobile-style-checkbox') && isDropdown;
                 const willOpen = !groupWrapper.classList.contains('open');
                 if (willOpen) closeOtherOpenMenus(groupWrapper);
                 const isOpenNow = groupWrapper.classList.toggle('open');
                 if (headerEl) headerEl.setAttribute('aria-expanded', isOpenNow ? 'true' : 'false');
+                // Cascade: closing a group also collapses any open subcategory within it
+                if (!isOpenNow) {
+                    const activeSub = groupWrapper.querySelector('.filter-options.children.pf-subcategory-active');
+                    if (activeSub) {
+                        activeSub.classList.remove('pf-subcategory-active');
+                        const onEnd = (e) => {
+                            if (e.propertyName !== 'max-height') return;
+                            if (!activeSub.classList.contains('pf-subcategory-active')) activeSub.style.paddingLeft = '';
+                            activeSub.removeEventListener('transitionend', onEnd);
+                        };
+                        activeSub.addEventListener('transitionend', onEnd);
+                    }
+                }
                 if (optionsContainer) {
                     if (isMobileCheckboxMode) {
                         const panel = optionsContainer;
@@ -1379,8 +1403,12 @@
             } else if (shouldShowLabel) {
                 headerEl = document.createElement('p');
                 headerEl.className = 'filter-group-header';
-                headerEl.innerHTML = `${displayName}${accordionEnabled ? ' <svg class="pf-caret" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>' : ''}`;
-                if (accordionEnabled) {
+                // isTopbarMultiGroupInline headers also need click handlers because
+                // applyResponsiveMode() will auto-enable accordion on mobile for multi-group.
+                const needsAccordionHandler = accordionEnabled || isTopbarMultiGroupInline;
+                const caretSvg = needsAccordionHandler ? ' <svg class="pf-caret" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>' : '';
+                headerEl.innerHTML = `${displayName}${caretSvg}`;
+                if (needsAccordionHandler) {
                     headerEl.setAttribute('role', 'button');
                     headerEl.tabIndex = 0;
                     headerEl.addEventListener('click', toggleGroup);
