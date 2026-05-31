@@ -1289,7 +1289,6 @@
             const groupWrapper = document.createElement('div');
             groupWrapper.className = 'filter-group-container';
             groupWrapper.dataset.group = groupName;
-            const subContainersForThisGroup = []; // collected then appended after optionsContainer
 
             const contentIndex = groupRenderCount++;
             const forceMobileLabel = accordionEnabled; // Always render headers when accordion configured — fixes broken accordion after desktop→mobile resize
@@ -1311,19 +1310,6 @@
                 if (willOpen) closeOtherOpenMenus(groupWrapper);
                 const isOpenNow = groupWrapper.classList.toggle('open');
                 if (headerEl) headerEl.setAttribute('aria-expanded', isOpenNow ? 'true' : 'false');
-                // Cascade: closing a group also collapses any open subcategory within it
-                if (!isOpenNow) {
-                    const activeSub = groupWrapper.querySelector('.filter-options.children.pf-subcategory-active');
-                    if (activeSub) {
-                        activeSub.classList.remove('pf-subcategory-active');
-                        const onEnd = (e) => {
-                            if (e.propertyName !== 'max-height') return;
-                            if (!activeSub.classList.contains('pf-subcategory-active')) activeSub.style.paddingLeft = '';
-                            activeSub.removeEventListener('transitionend', onEnd);
-                        };
-                        activeSub.addEventListener('transitionend', onEnd);
-                    }
-                }
                 if (optionsContainer) {
                     if (isMobileCheckboxMode) {
                         const panel = optionsContainer;
@@ -1581,21 +1567,12 @@
                             subContainer.appendChild(btn);
                         }
                     });
-                    if (isTopbarMultiGroupInline) {
-                        // Detach from item wrapper so it can push subsequent rows down in-flow
-                        subContainer.dataset.subcategoryParent = parent;
-                        subContainersForThisGroup.push(subContainer);
-                    } else {
-                        itemWrapper.appendChild(subContainer);
-                    }
+                    itemWrapper.appendChild(subContainer);
                 }
 
                 optionsContainer.appendChild(itemWrapper);
             });
             groupWrapper.appendChild(optionsContainer);
-            // Detached subcategory containers (topbar multi-group inline only): append
-            // as direct children of groupWrapper so they live in the normal flow.
-            subContainersForThisGroup.forEach(sc => groupWrapper.appendChild(sc));
             applyTruncation(optionsContainer);
 
             if (accordionEnabled && isMobileNow && !shouldHideByDefault && !isDropdown) {
@@ -1812,21 +1789,6 @@
         updateUrl();
     }
 
-    // Sets padding-left on a detached subcategory container so its first option aligns
-    // directly below the parent button that opened it.  Called synchronously (no RAF)
-    // before pf-subcategory-active is added so the indent is already at its final value
-    // when the CSS max-height transition begins — this prevents the "slide from left" effect.
-    function positionSubcategoryIndent(subEl, groupEl) {
-        if (!subEl || !groupEl) return;
-        const parentName = subEl.dataset.subcategoryParent;
-        if (!parentName) return;
-        const parentBtn = groupEl.querySelector(`.parent-btn[data-value="${CSS.escape(parentName)}"]`);
-        if (!parentBtn) return;
-        const groupRect = groupEl.getBoundingClientRect();
-        const parentRect = parentBtn.getBoundingClientRect();
-        subEl.style.paddingLeft = `${Math.max(0, Math.round(parentRect.left - groupRect.left))}px`;
-    }
-
     function updateAllUI() {
         const useCheckboxLayout = CONFIG.filterLayout === 'checkbox' || (isMobileViewport() && (CONFIG.mobile?.displayStyle === 'checkbox' || CONFIG.mobile?.behavior === 'checkbox'));
         // Clear all active states
@@ -1838,20 +1800,6 @@
         document.querySelectorAll('.group-all-chk').forEach(c => c.checked = false);
         document.querySelectorAll('.filter-item-wrapper').forEach(w => w.classList.remove('active'));
         document.querySelectorAll('.filter-dropdown-header, .filter-group-header').forEach(h => h.classList.remove('active'));
-        // Clear detached subcategory containers (topbar multi-group inline).
-        // padding-left is deferred until the close transition ends — clearing it
-        // immediately alongside removing pf-subcategory-active causes items to
-        // snap to the left edge while max-height is still animating (visible jump).
-        document.querySelectorAll('.filter-options.children.pf-subcategory-active').forEach(c => {
-            c.classList.remove('pf-subcategory-active');
-            const clearIndent = (e) => {
-                if (e.propertyName !== 'max-height') return;
-                if (c.classList.contains('pf-subcategory-active')) return; // re-opened before close finished
-                c.style.paddingLeft = '';
-                c.removeEventListener('transitionend', clearIndent);
-            };
-            c.addEventListener('transitionend', clearIndent);
-        });
 
         Object.keys(state.activeFilters).forEach(group => {
             const groupEl = document.querySelector(`.filter-group-container[data-group="${group}"]`);
@@ -1863,12 +1811,9 @@
                     const parent = parts[0];
                     const child = parts[1];
 
-                    // Activate Wrapper (shows children in sidebar/single-group)
+                    // Activate Wrapper (shows children via CSS .filter-item-wrapper.active rule)
                     const wrapper = groupEl.querySelector(`.filter-item-wrapper[data-parent="${parent}"]`);
                     if (wrapper) wrapper.classList.add('active');
-                    // Activate detached subcategory container (topbar multi-group inline)
-                    const detachedSub = groupEl.querySelector(`.filter-options.children[data-subcategory-parent="${parent}"]`);
-                    if (detachedSub) { positionSubcategoryIndent(detachedSub, groupEl); detachedSub.classList.add('pf-subcategory-active'); }
 
                     // Activate Child Button/Checkbox
                     if (useCheckboxLayout) {
@@ -1889,10 +1834,7 @@
                     // Strictly Parent Selected (ALL)
                     const parent = val;
                     const wrapper = groupEl.querySelector(`.filter-item-wrapper[data-parent="${parent}"]`);
-                    if (wrapper) wrapper.classList.add('active'); // Show Children (sidebar/single-group)
-                    // Activate detached subcategory container (topbar multi-group inline)
-                    const detachedSub2 = groupEl.querySelector(`.filter-options.children[data-subcategory-parent="${parent}"]`);
-                    if (detachedSub2) { positionSubcategoryIndent(detachedSub2, groupEl); detachedSub2.classList.add('pf-subcategory-active'); }
+                    if (wrapper) wrapper.classList.add('active');
 
                     if (useCheckboxLayout) {
                         const pChk = groupEl.querySelector(`.parent-chk[data-value="${parent}"]`);

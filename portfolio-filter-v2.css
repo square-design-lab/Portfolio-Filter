@@ -786,25 +786,27 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     animation: pfSubfilterIn 0.18s ease;
 }
 
-/* ── Multi-group topbar inline: detached subcategory containers ────────────────────
-   The JS build appends each .filter-options.children as a *direct child* of its
-   .filter-group-container (not nested inside .filter-item-wrapper) so it sits in
-   the normal flow and pushes subsequent filter rows down when open.
-   A CSS max-height transition produces the slide-down effect.
-   padding-left is set synchronously by positionSubcategoryIndent() before the
-   transition class is added, so the indent never animates (no left-to-right slide). */
-.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-group-container > .filter-options.children,
-.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-group-container > .filter-options.children {
-    /* Override the topbar absolute-position rule above */
-    position: static;
-    top: auto;
-    left: auto;
-    right: auto;
-    background: transparent;
-    animation: none;
-    z-index: auto;
+/* ── Multi-group topbar inline: vertical filter layout ─────────────────────────────
+   Filter items stack vertically (one per row) so subcategories expand accordion-style
+   directly below their parent without overlaying other filter rows. */
 
-    /* Closed state */
+/* Options container: vertical stack */
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-options:not(.children),
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-options:not(.children) {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Each filter item spans full width so its subcategory row can too */
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-item-wrapper,
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-item-wrapper {
+    width: 100%;
+}
+
+/* Attached subcategory: accordion open/close with directional easing.
+   Subcategory stays inside .filter-item-wrapper and is revealed via .active. */
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-item-wrapper .filter-options.children,
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-item-wrapper .filter-options.children {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -814,18 +816,22 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     opacity: 0;
     padding-top: 0;
     padding-bottom: 0;
-    /* padding-left set by JS — not in transition (prevents horizontal slide on close) */
-    /* Close: accelerates into collapse — feels decisive */
+    padding-left: 0;
+    margin: 0;
+    position: static;
+    background: transparent;
+    animation: none;
+    /* Close: accelerates into collapse */
     transition: max-height 0.22s cubic-bezier(0.4, 0, 1, 1), opacity 0.16s ease-in;
 }
 
-.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-group-container > .filter-options.children.pf-subcategory-active,
-.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-group-container > .filter-options.children.pf-subcategory-active {
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-item-wrapper.active .filter-options.children,
+.portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-item-wrapper.active .filter-options.children {
     max-height: 200px;
     opacity: 1;
     padding-top: 6px;
     padding-bottom: 6px;
-    /* Open: decelerates into reveal — feels smooth and premium */
+    /* Open: decelerates into reveal */
     transition: max-height 0.34s cubic-bezier(0, 0, 0.2, 1), opacity 0.26s ease-out;
 }
 
@@ -834,7 +840,7 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Mobile: revert subcategory bar to normal in-flow layout */
+/* Mobile: revert single-group subcategory bar to normal in-flow layout */
 @media (max-width: 1024px) {
     .portfolio-control-panel.pf-topbar.layout-inline .filter-options.children {
         position: static;
@@ -845,6 +851,13 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
         border-bottom: none;
         background: transparent;
         animation: none;
+    }
+
+    /* Multi-group: subcategories on mobile show as a vertically-stacked indented list */
+    .portfolio-control-panel.pf-topbar.layout-inline.pf-groups-2 .filter-item-wrapper .filter-options.children,
+    .portfolio-control-panel.pf-topbar.layout-inline.pf-groups-3plus .filter-item-wrapper .filter-options.children {
+        flex-direction: column;
+        padding-left: 16px;
     }
 }
 
@@ -934,8 +947,11 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
         pointer-events: none;
     }
 
-    /* Mobile accordion: collapse/expand filter groups */
-    .portfolio-control-panel.mobile-behavior-accordion .filter-options {
+    /* Mobile accordion: collapse/expand filter groups.
+       :not(.children) keeps subcategory containers out of this rule so they don't
+       expand when a group opens — subcategories have their own open/close logic
+       driven by .filter-item-wrapper.active and avoid the large empty-space bug. */
+    .portfolio-control-panel.mobile-behavior-accordion .filter-options:not(.children) {
         max-height: 0;
         overflow: hidden;
         opacity: 0;
@@ -945,7 +961,7 @@ body.pf-show-meta-labels .portfolio-meta-wrapper span[class^="custom-tag-"]:not(
         transition: max-height 0.22s cubic-bezier(0.4, 0, 1, 1), opacity 0.16s ease-in, padding 0.22s cubic-bezier(0.4, 0, 1, 1);
     }
 
-    .portfolio-control-panel.mobile-behavior-accordion .filter-group-container.open .filter-options {
+    .portfolio-control-panel.mobile-behavior-accordion .filter-group-container.open .filter-options:not(.children) {
         max-height: 1000vh !important;
         opacity: 1;
         padding-top: 10px;

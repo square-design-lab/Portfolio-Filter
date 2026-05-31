@@ -1410,13 +1410,20 @@
           const isMobilePreview = document.getElementById('previewFrame')?.classList.contains('mobile')
           const mobileDisplayMode = config.mobile?.displayStyle || 'chips'
           const mobileBehavior = config.mobile?.behavior || 'none'
-          const isAccordion = mobileBehavior === 'accordion' && isMobilePreview
-          const mobileCheckboxMode = isMobilePreview && (mobileBehavior === 'checkbox' || mobileDisplayMode === 'checkbox')
-          const effectiveMobileStyle = mobileCheckboxMode ? 'checkbox' : mobileDisplayMode
           const useCheckboxDropdown = config.filterLayout === 'checkbox' && layout === 'top'
           const isDropdown = config.filterLayout === 'dropdown' || useCheckboxDropdown
+          const isTopbarInline = layout === 'top' && !isDropdown
+          const isMultiGroupConfig = config.multipleFilterGroups !== false
+          // Auto-accordion: mobile + topbar inline + multiple groups → always accordion
+          const isAutoAccordion = isMobilePreview && isTopbarInline && isMultiGroupConfig
+          const isAccordion = (mobileBehavior === 'accordion' || isAutoAccordion) && isMobilePreview
+          // Desktop vertical layout: topbar inline + multiple groups → items stack vertically
+          const isTopbarMultiGroupVertical = !isMobilePreview && isTopbarInline && isMultiGroupConfig
+          const mobileCheckboxMode = isMobilePreview && (mobileBehavior === 'checkbox' || mobileDisplayMode === 'checkbox')
+          const effectiveMobileStyle = mobileCheckboxMode ? 'checkbox' : mobileDisplayMode
           const forceLabelForLayout = config.filterLayout !== 'inline'
-          const shouldShowLabel = forceLabelForLayout || config.showFilterLabel || isAccordion
+          // Labels always shown for multi-group (needed to identify each filter group)
+          const shouldShowLabel = forceLabelForLayout || config.showFilterLabel || isAccordion || isTopbarMultiGroupVertical
           const isChipRow = isMobilePreview && effectiveMobileStyle === 'chips' && !isDropdown
 
           if (isAccordion) group.classList.add('accordion')
@@ -1543,7 +1550,12 @@
             optsDiv.style.justifyContent = config.styles.align === 'center' ? 'center' : (config.styles.align === 'right' ? 'flex-end' : 'flex-start')
             optsDiv.style.gap = config.styles.gap + 'px'
 
-            if (isMobilePreview) {
+            if (isTopbarMultiGroupVertical) {
+              // Desktop vertical layout for multi-group topbar inline
+              optsDiv.style.flexDirection = 'column'
+              optsDiv.style.alignItems = 'flex-start'
+              optsDiv.style.flexWrap = 'nowrap'
+            } else if (isMobilePreview) {
               if (effectiveMobileStyle === 'chips') {
                 optsDiv.style.flexWrap = 'nowrap'; optsDiv.style.overflowX = 'auto';
               } else {
@@ -1658,8 +1670,13 @@
           const stickyEnabled = !!config.stickySidebar && config.layout === 'sidebar'
           const sortLabel = (config.textLabels?.sortText || 'Sort By').trim() || 'Sort By'
 
+          // Auto-accordion: mobile + topbar inline + multiple groups
+          const renderIsTopbarInline = config.layout === 'top' && config.filterLayout !== 'dropdown' && config.filterLayout !== 'checkbox'
+          const renderIsMultiGroup = config.multipleFilterGroups !== false
+          const effectiveMobileBehavior = (mobileBehavior === 'accordion' || (isMobilePreview && renderIsTopbarInline && renderIsMultiGroup)) ? 'accordion' : mobileBehavior
+
           wrap.innerHTML = ''
-          const mobileClasses = isMobilePreview ? ` mobile-style-${effectiveMobileStyle} mobile-behavior-${mobileBehavior}` : ''
+          const mobileClasses = isMobilePreview ? ` mobile-style-${effectiveMobileStyle} mobile-behavior-${effectiveMobileBehavior}` : ''
           const inlineVariantClass = (config.filterLayout === 'inline' && config.desktopInlineVariant === 'text') ? ' inline-variant-text' : ''
           wrap.className = `mock-wrapper mock-layout-${config.layout}${mobileClasses}${inlineVariantClass} mock-anim ${config.gridAnimation}${pillStyle ? ' pf-tag-style-pills' : ''}${stickyEnabled ? ' sticky-enabled' : ''}`
 
